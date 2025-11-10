@@ -16,7 +16,6 @@ const PaytmChecksum = require("paytmchecksum");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-
 // -------------------------
 // Middleware
 // -------------------------
@@ -476,5 +475,9 @@ app.post("/api/paytm/callback", async (req, res) => {
 // -------------------------
 // Start server
 // -------------------------
-module.exports = app;
+
+app.listen(PORT, () => {
+  console.log(`✅ Server running on port ${PORT}`);
+});
+
 
