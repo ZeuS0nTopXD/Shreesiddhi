@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <link rel="icon" type="image/png" href="\logo_title.jpg">
+  <link rel="icon" type="image/png" href="/logo_title.jpg">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Shree Siddhi Ayur Wellness</title>
-  <link rel="stylesheet" href="appointment.css">
+  <link rel="stylesheet" href="/appointment.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
 <body>
@@ -13,7 +13,7 @@
   <!-- HEADER -->
   <header class="top-header">
     <div class="header-left">
-      <img src="logo.png" alt="Logo" class="logo">
+      <img src="/logo.png" alt="Logo" class="logo">
       <div class="brand-title">
         <h1>SHREE SIDDHI AYUR</h1>
         <span>WELLNESS</span>
@@ -47,22 +47,18 @@
         <input type="email" name="email" required>
 
         <label>Phone Number</label>
-        <input type="tel" name="phone" required>
+        <input type="tel" name="phone" required pattern="[0-9]{10}" placeholder="10-digit number">
 
         <label>Preferred Date</label>
         <input type="date" name="date" required>
 
-        <!-- Booking type dropdown -->
         <label>What would you like to book?</label>
         <select name="bookingType" id="bookingType" required>
           <option value="appointment" data-fee="500">Appointment — ₹500</option>
           <option value="followup" data-fee="200">Follow Up — ₹200</option>
         </select>
 
-        <!-- Fee display -->
-        <p id="feeDisplay" style="margin: 10px 0; font-weight: bold; color: #444;">
-          Fee: ₹500
-        </p>
+        <p id="feeDisplay" style="margin: 10px 0; font-weight: bold; color: #444;">Fee: ₹500</p>
 
         <label>Message</label>
         <textarea name="message"></textarea>
@@ -99,7 +95,7 @@
     <div class="footer-section">
       <h4>Follow us</h4>
       <div class="social-icons">
-        <a href="https://www.instagram.com/shreesiddhiwellness?igsh=bXg3Njg0Znp0Yzl1" target="_blank"><i class="fab fa-instagram"></i></a>
+        <a href="https://www.instagram.com/shreesiddhiwellness" target="_blank"><i class="fab fa-instagram"></i></a>
         <a href="https://facebook.com" target="_blank"><i class="fab fa-facebook"></i></a>
         <a href="https://google.com" target="_blank"><i class="fab fa-google"></i></a>
         <a href="https://wa.me/1234567890" target="_blank"><i class="fab fa-whatsapp"></i></a>
@@ -109,53 +105,54 @@
     </div>
   </footer>
 
-  <!-- BOTTOM BAR -->
   <div class="bottom-bar">
     <p>shrisiddhiayurwellness@gmail.com | © 2025 Shree Siddhi Ayur Wellness. All rights reserved.</p>
     <p><a href="#">Privacy Policy</a> | <a href="#">Terms & Conditions</a></p>
   </div>
 
-  <!-- PAYTM FRONTEND SCRIPT -->
+  <!-- PAYTM SCRIPT -->
   <script>
     const bookingTypeSelect = document.getElementById("bookingType");
     const feeDisplay = document.getElementById("feeDisplay");
+    const form = document.getElementById("appointmentForm");
 
     // Update fee dynamically
     bookingTypeSelect.addEventListener("change", () => {
-      const fee = bookingTypeSelect.options[bookingTypeSelect.selectedIndex].dataset.fee;
+      const fee = Number(bookingTypeSelect.selectedOptions[0].dataset.fee);
       feeDisplay.textContent = `Fee: ₹${fee}`;
     });
 
-    // Handle form submit
-    document.getElementById("appointmentForm").addEventListener("submit", async (e) => {
+    form.addEventListener("submit", async (e) => {
       e.preventDefault();
+      const submitBtn = e.target.querySelector(".submit-btn");
+      submitBtn.disabled = true;
+      submitBtn.textContent = "Processing...";
 
-      const formData = new FormData(e.target);
+      const formData = new FormData(form);
       const data = Object.fromEntries(formData.entries());
-
-      // Add fee
-      const selectedOption = bookingTypeSelect.options[bookingTypeSelect.selectedIndex];
-      data.fee = selectedOption.dataset.fee;
+      data.fee = Number(bookingTypeSelect.selectedOptions[0].dataset.fee);
 
       try {
-        // Step 1: Request Paytm order from backend
         const res = await fetch("/api/paytm/order", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             amount: data.fee,
             email: data.email,
-            phone: data.phone
+            phone: data.phone,
+            name: data.name
           })
         });
 
         const result = await res.json();
         if (!result.success) {
           alert(result.message || "Failed to create Paytm order.");
+          submitBtn.disabled = false;
+          submitBtn.textContent = "Proceed to Paytm Payment";
           return;
         }
 
-        // Step 2: Dynamically create form & submit to Paytm
+        // Create form and submit to Paytm
         const paytmForm = document.createElement("form");
         paytmForm.method = "POST";
         paytmForm.action = result.data.paytmUrl;
@@ -174,6 +171,8 @@
       } catch (err) {
         console.error("Paytm order creation failed:", err);
         alert("An error occurred. Please try again.");
+        submitBtn.disabled = false;
+        submitBtn.textContent = "Proceed to Paytm Payment";
       }
     });
   </script>

@@ -9,7 +9,6 @@ require("dotenv").config();
 const express = require("express");
 const path = require("path");
 const fs = require("fs");
-const https = require("https");
 const session = require("express-session");
 const cors = require("cors");
 const PaytmChecksum = require("paytmchecksum");
@@ -112,6 +111,7 @@ function pushAppointment(obj) {
     message: obj.message || "",
     payment_id: obj.payment_id || null,
     order_id: obj.order_id || null,
+    status: obj.status || "pending",
     timestamp: new Date().toISOString(),
   };
   arr.push(newAppointment);
@@ -257,6 +257,19 @@ app.post("/api/feedbacks/undo", requireAdmin, (_req, res) => {
 });
 
 // -------------------------
+// PATCH: mark appointment done
+// -------------------------
+app.patch("/api/appointments/:id", requireAdmin, (req, res) => {
+  const id = req.params.id;
+  const appointments = readJsonArray("appointments.json");
+  const index = appointments.findIndex(a => a.id === id);
+  if (index === -1) return res.status(404).json({ error: "Appointment not found" });
+  appointments[index].status = req.body.status || "done";
+  writeJsonArray("appointments.json", appointments);
+  return res.json({ status: "success", data: appointments[index] });
+});
+
+// -------------------------
 // Admin Login / Logout
 // -------------------------
 app.post("/api/admin/login", (req, res) => {
@@ -286,11 +299,10 @@ app.get("/admin/feedback", requireAdmin, (_req, res) => res.sendFile(path.join(_
 app.get("/admin/admin-login.html", (_req, res) => res.sendFile(path.join(__dirname, "public", "admin", "admin-login.html")));
 
 // -------------------------
-// Paytm Integration
+// Paytm Integration (placeholders)
 // -------------------------
-// (Same as your existing code)
-app.post("/api/paytm/order", async (req, res) => { /*...*/ });
-app.post("/api/paytm/callback", async (req, res) => { /*...*/ });
+app.post("/api/paytm/order", async (req, res) => { /* Implement your Paytm order logic */ });
+app.post("/api/paytm/callback", async (req, res) => { /* Implement your Paytm callback logic */ });
 
 // -------------------------
 // Start server

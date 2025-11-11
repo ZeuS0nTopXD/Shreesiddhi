@@ -237,11 +237,7 @@
         </select>
       </div>
       <table>
-        <thead>
-          <tr>
-            <th>Name</th><th>Email</th><th>Phone</th><th>Date</th><th>Fee</th><th>Status</th><th>Actions</th>
-          </tr>
-        </thead>
+        <thead id="appointmentsHeader"></thead>
         <tbody id="appointmentsTable">
           <tr><td colspan="7" class="empty-row">Loading...</td></tr>
         </tbody>
@@ -255,15 +251,7 @@
         <button class="clear-btn" onclick="clearFeedback()">Clear All</button>
       </h2>
       <table>
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Email</th>
-            <th>Phone</th>
-            <th>Rating</th>
-            <th>Message</th>
-          </tr>
-        </thead>
+        <thead id="feedbackHeader"></thead>
         <tbody id="feedbackTable">
           <tr><td colspan="5" class="empty-row">Loading...</td></tr>
         </tbody>
@@ -294,195 +282,196 @@
     </div>
   </div>
 
-  <script>
-    const API = "/api";
-    let appointmentsData = [];
+<script>
+const API = "/api";
+let appointmentsData = [];
 
-    function showSection(id, el) {
-      document.querySelectorAll(".section").forEach(s => s.classList.remove("active"));
-      document.getElementById(id).classList.add("active");
+// ----------------- Navigation -----------------
+function showSection(id, el) {
+  document.querySelectorAll(".section").forEach(s => s.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
 
-      document.querySelectorAll(".sidebar a").forEach(a => a.classList.remove("active"));
-      el.classList.add("active");
+  document.querySelectorAll(".sidebar a").forEach(a => a.classList.remove("active"));
+  el.classList.add("active");
 
-      document.querySelector(".header h1").textContent = id.charAt(0).toUpperCase() + id.slice(1);
+  document.querySelector(".header h1").textContent = id.charAt(0).toUpperCase() + id.slice(1);
 
-      if (id === "submissions") loadSubmissions();
-      if (id === "feedback") loadFeedback();
-    }
+  if (id === "submissions") loadSubmissions();
+  if (id === "feedback") loadFeedback();
+}
 
-    async function fetchAppointments() {
-      const res = await fetch(`${API}/appointments`);
-      return res.json();
-    }
-    async function fetchFeedback() {
-      const res = await fetch(`${API}/feedbacks`);
-      return res.json();
-    }
+// ----------------- Fetch APIs -----------------
+async function fetchAppointments() {
+  const res = await fetch(`${API}/appointments`);
+  return res.json();
+}
+async function fetchFeedback() {
+  const res = await fetch(`${API}/feedbacks`);
+  return res.json();
+}
 
-    async function renderDashboard() {
-      appointmentsData = await fetchAppointments();
-      const feedback = await fetchFeedback();
+// ----------------- Render Dashboard -----------------
+async function renderDashboard() {
+  appointmentsData = await fetchAppointments();
+  const feedback = await fetchFeedback();
 
-      document.getElementById("appointmentsCount").textContent = appointmentsData.length;
-      document.getElementById("feedbackCount").textContent = feedback.length;
-      document.getElementById("patientsCount").textContent = new Set(appointmentsData.map(a => a.email)).size;
-      document.getElementById("revenueCount").textContent = "₹" + appointmentsData.reduce((s,a)=>s+(a.fee||0),0);
+  document.getElementById("appointmentsCount").textContent = appointmentsData.length;
+  document.getElementById("feedbackCount").textContent = feedback.length;
+  document.getElementById("patientsCount").textContent = new Set(appointmentsData.map(a => a.email)).size;
+  document.getElementById("revenueCount").textContent = "₹" + appointmentsData.reduce((s,a)=>s+(Number(a.fee)||0),0);
 
-      renderAppointmentsTable();
-      renderFeedbackTable(feedback);
-    }
+  renderAppointmentsTable();
+  renderFeedbackTable(feedback);
+}
 
-    function renderAppointmentsTable() {
-      const aptTable = document.getElementById("appointmentsTable");
-      aptTable.innerHTML = "";
-      if (!appointmentsData.length) {
-        aptTable.innerHTML = `<tr><td colspan="7" class="empty-row">No appointments</td></tr>`;
-      } else {
-        appointmentsData.forEach(a => {
-          aptTable.innerHTML += `
-            <tr>
-              <td>${a.name}</td>
-              <td>${a.email}</td>
-              <td>${a.phone || "-"}</td>
-              <td>${a.date}</td>
-              <td>₹${a.fee||0}</td>
-              <td><span class="status pending">Pending</span></td>
-              <td><button class="action-btn" onclick="markDone(this)">Mark Done</button></td>
-            </tr>`;
-        });
-      }
-    }
+// ----------------- Appointments Table -----------------
+function renderAppointmentsTable() {
+  const aptTable = document.getElementById("appointmentsTable");
+  const aptHeader = document.getElementById("appointmentsHeader");
 
-    function renderFeedbackTable(feedback) {
-      const fbTable = document.getElementById("feedbackTable");
-      fbTable.innerHTML = "";
-      if (!feedback.length) {
-        fbTable.innerHTML = `<tr><td colspan="5" class="empty-row">No feedback</td></tr>`;
-      } else {
-        feedback.forEach(f => {
-          fbTable.innerHTML += `
-            <tr>
-              <td>${f.name}</td>
-              <td>${f.email}</td>
-              <td>${f.phone || "-"}</td>
-              <td>${f.rating || "-"}</td>
-              <td>${f.message}</td>
-            </tr>`;
-        });
-      }
-    }
+  aptTable.innerHTML = "";
+  aptHeader.innerHTML = "";
 
-    function markDone(btn) {
-      const row = btn.closest("tr");
-      row.querySelector(".status").className = "status done";
-      row.querySelector(".status").textContent = "Done";
-      btn.remove();
-    }
+  if (!appointmentsData.length) {
+    aptTable.innerHTML = `<tr><td colspan='7' class='empty-row'>No appointments</td></tr>`;
+    return;
+  }
 
-    function applyFilters() {
-      const search = document.getElementById("searchInput").value.toLowerCase();
-      const statusFilter = document.getElementById("statusFilter").value;
+  const keys = Object.keys(appointmentsData[0]);
+  aptHeader.innerHTML = `<tr>${keys.map(k=>`<th>${k.charAt(0).toUpperCase()+k.slice(1)}</th>`).join('')}<th>Status</th><th>Actions</th></tr>`;
 
-      const rows = document.querySelectorAll("#appointmentsTable tr");
-      rows.forEach(row => {
-        const name = row.children[0]?.textContent.toLowerCase() || "";
-        const email = row.children[1]?.textContent.toLowerCase() || "";
-        const status = row.querySelector(".status")?.textContent.toLowerCase() || "";
+  const colCount = keys.length + 2;
 
-        let visible = true;
-        if (search && !name.includes(search) && !email.includes(search)) visible = false;
-        if (statusFilter !== "all" && status !== statusFilter) visible = false;
+  aptTable.innerHTML = appointmentsData.map(a => {
+    return `<tr>
+      ${keys.map(k => `<td>${a[k] ?? "-"}</td>`).join('')}
+      <td><span class="status ${a.status==='done'?'done':'pending'}">${a.status ? a.status.charAt(0).toUpperCase() + a.status.slice(1) : 'Pending'}</span></td>
+      <td><button class="action-btn" onclick="markDone(this,'${a.id}')">Mark Done</button></td>
+    </tr>`;
+  }).join('');
+}
 
-        row.style.display = visible ? "" : "none";
-      });
-    }
+// ----------------- Feedback Table -----------------
+function renderFeedbackTable(feedback) {
+  const fbTable = document.getElementById("feedbackTable");
+  const fbHeader = document.getElementById("feedbackHeader");
 
-    async function clearAppointments() {
-      if (!confirm("Clear all appointments?")) return;
-      await fetch(`${API}/appointments`, { method: "DELETE" });
-      renderDashboard();
-    }
-    async function clearFeedback() {
-      if (!confirm("Clear all feedback?")) return;
-      await fetch(`${API}/feedbacks`, { method: "DELETE" });
-      renderDashboard();
-    }
+  fbTable.innerHTML = "";
+  fbHeader.innerHTML = "";
 
-    async function logout() {
-      await fetch(`${API}/admin/logout`);
-      window.location.href = "/admin/admin-login.html";
-    }
+  if (!feedback.length) {
+    fbTable.innerHTML = `<tr><td colspan="5" class="empty-row">No feedback</td></tr>`;
+    return;
+  }
 
-    async function loadFeedback() {
-      const feedback = await fetchFeedback();
-      renderFeedbackTable(feedback);
-    }
+  const keys = Object.keys(feedback[0]);
+  fbHeader.innerHTML = `<tr>${keys.map(k => `<th>${k.charAt(0).toUpperCase()+k.slice(1)}</th>`).join('')}</tr>`;
+  fbTable.innerHTML = feedback.map(f=>`<tr>${keys.map(k=>`<td>${f[k]??'-'}</td>`).join('')}</tr>`).join('');
+}
 
-    async function loadSubmissions() {
-      try {
-        const [submissionsRes, paymentsRes] = await Promise.all([
-          fetch(`${API}/submissions`),
-          fetch(`${API}/payments`)
-        ]);
+// ----------------- Mark Done -----------------
+async function markDone(btn,id) {
+  const row = btn.closest("tr");
+  row.querySelector(".status").className="status done";
+  row.querySelector(".status").textContent="Done";
+  btn.remove();
 
-        const submissions = await submissionsRes.json();
-        const payments = await paymentsRes.json();
+  // Persist to backend
+  await fetch(`${API}/appointments/${id}`, {
+    method: "PATCH",
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({status:'done'})
+  });
+}
 
-        renderAdminTable("submissions", submissions);
-        renderAdminTable("payments", payments);
+// ----------------- Filter -----------------
+function applyFilters() {
+  const search = document.getElementById("searchInput").value.toLowerCase();
+  const statusFilter = document.getElementById("statusFilter").value;
 
-      } catch (err) {
-        console.error("Error loading submissions:", err);
-        document.getElementById("submissionsBody").innerHTML = "<tr><td colspan='5' class='empty-row'>Failed to load submissions</td></tr>";
-        document.getElementById("paymentsBody").innerHTML = "<tr><td colspan='5' class='empty-row'>Failed to load payments</td></tr>";
-      }
-    }
+  const rows = document.querySelectorAll("#appointmentsTable tr");
+  rows.forEach(row => {
+    const cells = Array.from(row.children);
+    const text = cells.map(c=>c.textContent.toLowerCase()).join(' ');
+    const status = row.querySelector(".status")?.textContent.toLowerCase() || "";
+    row.style.display = (text.includes(search) && (statusFilter==='all'||status===statusFilter)) ? "" : "none";
+  });
+}
 
-    function renderAdminTable(type, data) {
-      const headerEl = document.getElementById(type + "Header");
-      const bodyEl = document.getElementById(type + "Body");
+// ----------------- Clear -----------------
+async function clearAppointments() {
+  if(!confirm("Clear all appointments?")) return;
+  await fetch(`${API}/appointments`, {method:"DELETE"});
+  renderDashboard();
+}
+async function clearFeedback() {
+  if(!confirm("Clear all feedback?")) return;
+  await fetch(`${API}/feedbacks`, {method:"DELETE"});
+  renderDashboard();
+}
 
-      if (!data.length) {
-        bodyEl.innerHTML = `<tr><td colspan='5' class='empty-row'>No ${type} yet</td></tr>`;
-        return;
-      }
+// ----------------- Logout -----------------
+async function logout() {
+  await fetch(`${API}/admin/logout`);
+  window.location.href="/admin/admin-login.html";
+}
 
-      headerEl.innerHTML = Object.keys(data[0]).map(key => `<th>${key}</th>`).join("");
+// ----------------- Load Feedback -----------------
+async function loadFeedback() {
+  const feedback = await fetchFeedback();
+  renderFeedbackTable(feedback);
+}
 
-      bodyEl.innerHTML = data.map(row => {
-        const statusClass = row.status === "success" ? "status done" : row.status === "failure" ? "status pending" : "";
-        return `<tr class="${statusClass}">
-          ${Object.values(row).map(val => `<td>${val}</td>`).join("")}
-        </tr>`;
-      }).join("");
-    }
+// ----------------- Load Submissions -----------------
+async function loadSubmissions() {
+  try {
+    const [subsRes,payRes] = await Promise.all([fetch(`${API}/submissions`),fetch(`${API}/payments`)]);
+    const submissions = await subsRes.json();
+    const payments = await payRes.json();
 
-    // -------------------------
-// Auto-refresh polling
-// -------------------------
-const POLL_INTERVAL = 5000; // 5000ms = 5 seconds
+    renderAdminTable("submissions",submissions);
+    renderAdminTable("payments",payments);
+  } catch(err) {
+    console.error(err);
+    document.getElementById("submissionsBody").innerHTML = `<tr><td colspan='5' class='empty-row'>Failed to load submissions</td></tr>`;
+    document.getElementById("paymentsBody").innerHTML = `<tr><td colspan='5' class='empty-row'>Failed to load payments</td></tr>`;
+  }
+}
 
-setInterval(async () => {
-  // Only refresh visible sections to reduce load
-  const activeSection = document.querySelector(".section.active")?.id;
+// ----------------- Render Submissions/Payments -----------------
+function renderAdminTable(type,data){
+  const headerEl = document.getElementById(type+"Header");
+  const bodyEl = document.getElementById(type+"Body");
 
-  if (activeSection === "dashboard") {
-    await renderDashboard(); // refresh dashboard cards + tables
-  } else if (activeSection === "appointments") {
-    const appointments = await fetchAppointments();
-    appointmentsData = appointments;
+  if(!data.length){
+    bodyEl.innerHTML=`<tr><td colspan='${Object.keys(data[0]||{a:1}).length}' class='empty-row'>No ${type} yet</td></tr>`;
+    return;
+  }
+
+  headerEl.innerHTML=Object.keys(data[0]).map(k=>`<th>${k}</th>`).join("");
+  const colCount = Object.keys(data[0]).length;
+
+  bodyEl.innerHTML=data.map(r=>{
+    const statusClass=r.status==='success'?"status done":r.status==='failure'?"status pending":"";
+    return `<tr class="${statusClass}">${Object.values(r).map(v=>`<td>${v}</td>`).join("")}</tr>`;
+  }).join("");
+}
+
+// ----------------- Auto-refresh -----------------
+const POLL_INTERVAL = 5000;
+setInterval(async()=>{
+  const activeSection=document.querySelector(".section.active")?.id;
+  if(activeSection==="dashboard") await renderDashboard();
+  else if(activeSection==="appointments") {
+    appointmentsData = await fetchAppointments();
     renderAppointmentsTable();
-  } else if (activeSection === "feedback") {
+  } else if(activeSection==="feedback") {
     const feedback = await fetchFeedback();
     renderFeedbackTable(feedback);
-  } else if (activeSection === "submissions") {
-    await loadSubmissions();
-  }
-}, POLL_INTERVAL);
+  } else if(activeSection==="submissions") await loadSubmissions();
+},POLL_INTERVAL);
 
-
-    renderDashboard();
-  </script>
+renderDashboard();
+</script>
 </body>
 </html>
