@@ -256,10 +256,16 @@
       </h2>
       <table>
         <thead>
-          <tr><th>Name</th><th>Email</th><th>Message</th></tr>
+          <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Phone</th>
+            <th>Rating</th>
+            <th>Message</th>
+          </tr>
         </thead>
         <tbody id="feedbackTable">
-          <tr><td colspan="3" class="empty-row">Loading...</td></tr>
+          <tr><td colspan="5" class="empty-row">Loading...</td></tr>
         </tbody>
       </table>
     </div>
@@ -292,7 +298,6 @@
     const API = "/api";
     let appointmentsData = [];
 
-    // Show section & highlight sidebar
     function showSection(id, el) {
       document.querySelectorAll(".section").forEach(s => s.classList.remove("active"));
       document.getElementById(id).classList.add("active");
@@ -303,9 +308,9 @@
       document.querySelector(".header h1").textContent = id.charAt(0).toUpperCase() + id.slice(1);
 
       if (id === "submissions") loadSubmissions();
+      if (id === "feedback") loadFeedback();
     }
 
-    // Appointments & Feedback
     async function fetchAppointments() {
       const res = await fetch(`${API}/appointments`);
       return res.json();
@@ -339,7 +344,7 @@
             <tr>
               <td>${a.name}</td>
               <td>${a.email}</td>
-              <td>${a.phone}</td>
+              <td>${a.phone || "-"}</td>
               <td>${a.date}</td>
               <td>₹${a.fee||0}</td>
               <td><span class="status pending">Pending</span></td>
@@ -353,13 +358,15 @@
       const fbTable = document.getElementById("feedbackTable");
       fbTable.innerHTML = "";
       if (!feedback.length) {
-        fbTable.innerHTML = `<tr><td colspan="3" class="empty-row">No feedback</td></tr>`;
+        fbTable.innerHTML = `<tr><td colspan="5" class="empty-row">No feedback</td></tr>`;
       } else {
         feedback.forEach(f => {
           fbTable.innerHTML += `
             <tr>
               <td>${f.name}</td>
               <td>${f.email}</td>
+              <td>${f.phone || "-"}</td>
+              <td>${f.rating || "-"}</td>
               <td>${f.message}</td>
             </tr>`;
         });
@@ -407,7 +414,11 @@
       window.location.href = "/admin/admin-login.html";
     }
 
-    // Submissions & Payments
+    async function loadFeedback() {
+      const feedback = await fetchFeedback();
+      renderFeedbackTable(feedback);
+    }
+
     async function loadSubmissions() {
       try {
         const [submissionsRes, paymentsRes] = await Promise.all([
@@ -446,6 +457,30 @@
         </tr>`;
       }).join("");
     }
+
+    // -------------------------
+// Auto-refresh polling
+// -------------------------
+const POLL_INTERVAL = 5000; // 5000ms = 5 seconds
+
+setInterval(async () => {
+  // Only refresh visible sections to reduce load
+  const activeSection = document.querySelector(".section.active")?.id;
+
+  if (activeSection === "dashboard") {
+    await renderDashboard(); // refresh dashboard cards + tables
+  } else if (activeSection === "appointments") {
+    const appointments = await fetchAppointments();
+    appointmentsData = appointments;
+    renderAppointmentsTable();
+  } else if (activeSection === "feedback") {
+    const feedback = await fetchFeedback();
+    renderFeedbackTable(feedback);
+  } else if (activeSection === "submissions") {
+    await loadSubmissions();
+  }
+}, POLL_INTERVAL);
+
 
     renderDashboard();
   </script>

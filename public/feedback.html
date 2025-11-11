@@ -115,6 +115,72 @@
     <p><a href="#">Privacy Policy</a> | <a href="#">Terms & Conditions</a></p>
   </div>
 
-  <script src="script.js"></script>
+  <!-- SCRIPT -->
+  <script>
+    // -------------------- Custom Alert --------------------
+    function customAlert(message) {
+      const overlay = document.createElement("div");
+      overlay.style.position = "fixed";
+      overlay.style.top = "0";
+      overlay.style.left = "0";
+      overlay.style.width = "100%";
+      overlay.style.height = "100%";
+      overlay.style.background = "rgba(0,0,0,0.5)";
+      overlay.style.display = "flex";
+      overlay.style.justifyContent = "center";
+      overlay.style.alignItems = "center";
+      overlay.style.zIndex = "9999";
+
+      const box = document.createElement("div");
+      box.style.background = "#fff";
+      box.style.padding = "20px";
+      box.style.borderRadius = "8px";
+      box.style.textAlign = "center";
+      box.style.maxWidth = "300px";
+      box.style.boxShadow = "0 4px 10px rgba(0,0,0,0.3)";
+      box.innerHTML = `
+        <h3 style="margin-bottom:10px;color:#2d6a4f;">🌿 SHREE SIDDHI AYUR WELLNESS</h3>
+        <p style="margin-bottom:15px;">${message}</p>
+        <button id="closeAlert" style="padding:6px 12px;border:none;border-radius:5px;background:#e63946;color:#fff;cursor:pointer;">OK</button>
+      `;
+      overlay.appendChild(box);
+      document.body.appendChild(overlay);
+
+      document.getElementById("closeAlert").addEventListener("click", () => {
+        document.body.removeChild(overlay);
+      });
+    }
+
+    // -------------------- Feedback Form Submit --------------------
+    const feedbackForm = document.getElementById("feedbackForm");
+    feedbackForm.addEventListener("submit", async function(e) {
+      e.preventDefault();
+      const formData = {
+        name: feedbackForm.name.value.trim(),
+        email: feedbackForm.email.value.trim(),
+        phone: feedbackForm.phone.value.trim(),
+        feedback: feedbackForm.feedback.value.trim(),
+        rating: feedbackForm.rating.value
+      };
+
+      try {
+        const res = await fetch("/api/feedback", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(formData)
+        });
+        const data = await res.json();
+        if (data.status === "success") {
+          customAlert("✅ Your feedback has been submitted successfully!");
+          feedbackForm.reset();
+        } else {
+          customAlert("❌ Something went wrong. Please try again.");
+        }
+      } catch (err) {
+        console.error(err);
+        customAlert("⚠️ Error submitting feedback. Please try later.");
+      }
+    });
+  </script>
 </body>
 </html>
