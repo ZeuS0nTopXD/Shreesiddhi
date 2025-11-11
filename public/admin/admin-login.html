@@ -91,7 +91,7 @@
       });
       const data = await res.json();
       if(data.success){
-        window.location.href = '/admin/dashboard';
+        window.location.href = '/admin/admindash';
       } else {
         document.getElementById('errorMsg').textContent = "Invalid username or password";
       }
