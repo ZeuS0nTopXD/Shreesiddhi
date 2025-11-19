@@ -127,10 +127,14 @@ function serializeDoc(doc) {
 
 // middleware: requireAdmin (unchanged)
 function requireAdmin(req, res, next) {
-  if (req.session && req.session.isAdmin) return next();
-  if (req.path.startsWith("/api/")) return res.status(401).json({ error: "Unauthorized" });
-  return res.redirect("/admin/admin-login.html");
+  if (req.session && req.session.admin) return next();
+
+  if (req.path.startsWith("/api/"))
+    return res.status(401).json({ error: "Unauthorized" });
+
+  return res.redirect("/admin/login.html");
 }
+
 
 // -------------------- Routes --------------------
 // Health check
@@ -327,13 +331,15 @@ app.post("/api/feedbacks/undo", requireAdmin, async (_req, res) => {
 // -------------------- Admin Login / Logout --------------------
 app.post("/api/admin/login", (req, res) => {
   const { username, password } = req.body;
+
   if (username === ADMIN_USERNAME && password === ADMIN_PASSWORD) {
-    req.session.isAdmin = true;
+    req.session.admin = true;   // <— IMPORTANT
     return res.json({ success: true });
-  } else {
-    return res.json({ success: false });
   }
+
+  return res.json({ success: false });
 });
+
 app.get("/api/admin/logout", (req, res) => {
   req.session.destroy((err) => {
     if (err) {

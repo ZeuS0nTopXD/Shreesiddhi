@@ -77,25 +77,6 @@
     <p id="errorMsg"></p>
   </div>
 
-  <script>
-    const form = document.getElementById('loginForm');
-    form.addEventListener('submit', async e => {
-      e.preventDefault();
-      const res = await fetch('/api/admin/login', {
-        method: 'POST',
-        headers: {'Content-Type':'application/json'},
-        body: JSON.stringify({
-          username: document.getElementById('username').value,
-          password: document.getElementById('password').value
-        })
-      });
-      const data = await res.json();
-      if(data.success){
-        window.location.href = '/admin/admindash.html';
-      } else {
-        document.getElementById('errorMsg').textContent = "Invalid username or password";
-      }
-    });
-  </script>
+  <script src="admin.js"></script>
 </body>
 </html>
