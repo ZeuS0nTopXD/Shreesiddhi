@@ -33,7 +33,7 @@ async function adminLogin(e) {
   }).then(r => r.json());
 
 if (res.success) {
-  window.location.href = "admin/admindash.html"; // adjust path if needed
+  window.location.href = "admindash.html"; // adjust path if needed
 } else {
   document.getElementById("errorMsg").textContent = "Invalid login!";
 }
