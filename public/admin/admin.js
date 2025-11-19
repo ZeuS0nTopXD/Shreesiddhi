@@ -32,11 +32,11 @@ async function adminLogin(e) {
     credentials: "include"
   }).then(r => r.json());
 
-  if (res.success) {
-    window.location.href = "/admin/admindash";
-  } else {
-    alert("Invalid login!");
-  }
+if (res.success) {
+  window.location.href = "admin/admindash.html"; // adjust path if needed
+} else {
+  document.getElementById("errorMsg").textContent = "Invalid login!";
+}
 }
 
 // ------------------------------
@@ -248,4 +248,17 @@ setInterval(async()=>{
 // ------------------------------
 document.addEventListener("DOMContentLoaded", () => {
   renderDashboard();
+});
+
+document.addEventListener("DOMContentLoaded", () => {
+  // Only initialize dashboard if the dashboard exists
+  if (document.getElementById("appointmentsCount")) {
+    renderDashboard();
+  }
+
+  // Attach login event if login form exists
+  const loginForm = document.getElementById("loginForm");
+  if (loginForm) {
+    loginForm.addEventListener("submit", adminLogin);
+  }
 });
