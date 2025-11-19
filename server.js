@@ -1,17 +1,16 @@
-// server.js - final, tested structure for your project
+// server.js - MongoDB (Mongoose) version with timestamped backups (option C)
 require("dotenv").config();
 const express = require("express");
 const path = require("path");
-const fs = require("fs");
-const https = require("https");
 const session = require("express-session");
 const cors = require("cors");
-const PaytmChecksum = require("paytmchecksum"); // keep if Paytm used (you had it)
+const mongoose = require("mongoose");
+const PaytmChecksum = require("paytmchecksum"); // kept if Paytm used
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Middleware
+// -------------------- Middleware --------------------
 app.use(cors({ origin: true, credentials: true }));
 app.use(express.json({ limit: "1mb" }));
 app.use(express.urlencoded({ extended: true }));
@@ -36,7 +35,7 @@ app.use((req, _res, next) => {
   next();
 });
 
-// Config
+// -------------------- Config --------------------
 const ADMIN_USERNAME = process.env.ADMIN_USERNAME || "admin";
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "password";
 const PAYTM_ENV = (process.env.PAYTM_ENV || "staging").toLowerCase();
@@ -50,156 +49,123 @@ function paytmProcessUrl() {
     : "https://securegw-stage.paytm.in/order/process";
 }
 
-// Helpers: file utilities
-function filePathOf(name) {
-  return path.join(__dirname, name);
-}
-function backupPathOf(name) {
-  return path.join(__dirname, "backup", name);
-}
-function ensureJsonFile(name) {
-  const fp = filePathOf(name);
-  if (!fs.existsSync(fp)) {
-    try {
-      fs.writeFileSync(fp, "[]", "utf8");
-    } catch (e) {
-      console.error("Could not create", name, e);
-    }
-  }
-  return fp;
-}
-function readJsonArray(name) {
-  const fp = ensureJsonFile(name);
-  try {
-    const raw = fs.readFileSync(fp, "utf8") || "[]";
-    const parsed = JSON.parse(raw);
-    return Array.isArray(parsed) ? parsed : [];
-  } catch (e) {
-    console.error(`JSON parse error in ${name}:`, e.message);
-    return [];
-  }
-}
-function writeJsonArray(name, arr) {
-  try {
-    fs.writeFileSync(filePathOf(name), JSON.stringify(arr, null, 2), "utf8");
-  } catch (e) {
-    console.error(`Failed to write ${name}:`, e);
-  }
+// -------------------- MongoDB Connection --------------------
+if (!process.env.MONGO_URI) {
+  console.error("❌ MONGO_URI is not set in .env. Set MONGO_URI to your MongoDB connection string.");
+  process.exit(1);
 }
 
-// Pushers
-function pushAppointment(obj) {
-  const arr = readJsonArray("appointments.json");
-  const newAppointment = {
-    id: obj.id || `apt_${Date.now()}`,
-    name: obj.name || null,
-    email: obj.email || null,
-    phone: obj.phone || null,
-    bookingType: obj.bookingType || null,
-    fee: Number(obj.fee) || 0,
-    date: obj.date || null,
-    message: obj.message || obj.msg || "",
-    status: obj.status || "pending",
-    payment_id: obj.payment_id || null,
-    order_id: obj.order_id || null,
-    timestamp: new Date().toISOString(),
-  };
-  arr.push(newAppointment);
-  writeJsonArray("appointments.json", arr);
-  return newAppointment;
+mongoose
+  .connect(process.env.MONGO_URI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
+  .then(() => console.log("✅ MongoDB connected"))
+  .catch((err) => {
+    console.error("❌ MongoDB connection error:", err);
+    process.exit(1);
+  });
+
+// -------------------- Schemas & Models --------------------
+const AppointmentSchema = new mongoose.Schema({
+  // Keep similar fields as your original JSON structure
+  name: { type: String, default: null },
+  email: { type: String, default: null },
+  phone: { type: String, default: null },
+  bookingType: { type: String, default: null },
+  fee: { type: Number, default: 0 },
+  date: { type: String, default: null },
+  message: { type: String, default: "" },
+  status: { type: String, default: "pending" },
+  payment_id: { type: String, default: null },
+  order_id: { type: String, default: null },
+  timestamp: { type: Date, default: Date.now },
+}, { strict: false }); // strict:false allows any extra fields to be stored (compat)
+
+const FeedbackSchema = new mongoose.Schema({
+  name: { type: String, default: null },
+  email: { type: String, default: null },
+  phone: { type: String, default: null },
+  message: { type: String, default: "" },
+  rating: { type: Number, default: null },
+  timestamp: { type: Date, default: Date.now },
+}, { strict: false });
+
+const PaymentSchema = new mongoose.Schema({
+  order_id: { type: String, default: null },
+  txn_id: { type: String, default: null },
+  amount: { type: String, default: null },
+  status: { type: String, default: null },
+  gateway_response: { type: mongoose.Schema.Types.Mixed, default: null },
+  timestamp: { type: Date, default: Date.now },
+}, { strict: false });
+
+// Backup schema (stores timestamped backups for collections)
+const BackupSchema = new mongoose.Schema({
+  collectionName: { type: String, required: true }, // e.g. "appointments", "feedback"
+  createdAt: { type: Date, default: Date.now },
+  data: { type: Array, default: [] }, // array of documents (plain objects)
+  note: { type: String, default: null }
+});
+
+const Appointment = mongoose.model("Appointment", AppointmentSchema);
+const Feedback = mongoose.model("Feedback", FeedbackSchema);
+const Payment = mongoose.model("Payment", PaymentSchema);
+const Backup = mongoose.model("Backup", BackupSchema);
+
+// -------------------- Helpers --------------------
+// Convert Mongoose doc (or array of docs) to plain objects with `id` (string) for frontend compatibility
+function serializeDoc(doc) {
+  if (!doc) return doc;
+  if (Array.isArray(doc)) return doc.map(d => serializeDoc(d));
+  const o = doc.toObject ? doc.toObject() : { ...doc };
+  o.id = String(o._id);
+  delete o._id;
+  delete o.__v;
+  return o;
 }
 
-function pushFeedback(obj) {
-  const arr = readJsonArray("feedback.json");
-  // Accept both "feedback" and "message" keys (compat)
-  const message = obj.feedback ?? obj.message ?? "";
-  const newFeedback = {
-    id: `fb_${Date.now()}`,
-    name: obj.name || null,
-    email: obj.email || null,
-    phone: obj.phone || null,
-    message: message,
-    rating: obj.rating ? Number(obj.rating) : null,
-    timestamp: new Date().toISOString(),
-  };
-  arr.push(newFeedback);
-  writeJsonArray("feedback.json", arr);
-  return newFeedback;
-}
-
-function pushPayment(obj) {
-  const arr = readJsonArray("payments.json");
-  const newPayment = {
-    id: `pay_${Date.now()}`,
-    order_id: obj.order_id || null,
-    txn_id: obj.txn_id || null,
-    amount: obj.amount || null,
-    status: obj.status || null,
-    gateway_response: obj.gateway_response || null,
-    timestamp: new Date().toISOString(),
-  };
-  arr.push(newPayment);
-  writeJsonArray("payments.json", arr);
-  return newPayment;
-}
-
-function clearFile(name) {
-  const fp = filePathOf(name);
-  const bp = backupPathOf(name);
-  fs.mkdirSync(path.dirname(bp), { recursive: true });
-  if (!fs.existsSync(fp)) {
-    fs.writeFileSync(fp, "[]", "utf8");
-    fs.writeFileSync(bp, "[]", "utf8");
-    return;
-  }
-  try {
-    const current = fs.readFileSync(fp, "utf8");
-    fs.writeFileSync(bp, current, "utf8");
-    fs.writeFileSync(fp, "[]", "utf8");
-  } catch (e) {
-    console.error(`Error clearing ${name}:`, e);
-    throw e;
-  }
-}
-function undoClear(name) {
-  const fp = filePathOf(name);
-  const bp = backupPathOf(name);
-  if (!fs.existsSync(bp)) return false;
-  try {
-    const backup = fs.readFileSync(bp, "utf8");
-    fs.writeFileSync(fp, backup, "utf8");
-    return true;
-  } catch (e) {
-    console.error(`Error restoring backup for ${name}:`, e);
-    return false;
-  }
-}
-
-// Middleware: requireAdmin
+// middleware: requireAdmin (unchanged)
 function requireAdmin(req, res, next) {
   if (req.session && req.session.isAdmin) return next();
   if (req.path.startsWith("/api/")) return res.status(401).json({ error: "Unauthorized" });
   return res.redirect("/admin/admin-login.html");
 }
 
+// -------------------- Routes --------------------
 // Health check
-app.get("/", (_req, res) => res.send("Shree Siddhi Ayur Wellness backend is live ✅"));
+app.get("/", (_req, res) => res.send("Shree Siddhi Ayur Wellness backend (MongoDB) is live ✅"));
 
 // Public routes
-app.post("/api/appointment", (req, res) => {
+app.post("/api/appointment", async (req, res) => {
   try {
-    const saved = pushAppointment(req.body);
-    return res.json({ status: "success", type: "appointment", data: saved });
+    // Accept incoming shape — ensures fee numeric and default timestamp
+    const payload = {
+      ...req.body,
+      fee: req.body.fee ? Number(req.body.fee) : 0,
+      timestamp: req.body.timestamp ? new Date(req.body.timestamp) : undefined
+    };
+    const saved = await Appointment.create(payload);
+    return res.json({ status: "success", type: "appointment", data: serializeDoc(saved) });
   } catch (e) {
     console.error("Save appointment error:", e);
     return res.status(500).json({ error: "Could not save appointment" });
   }
 });
 
-app.post("/api/feedback", (req, res) => {
+app.post("/api/feedback", async (req, res) => {
   try {
-    const saved = pushFeedback(req.body);
-    return res.json({ status: "success", type: "feedback", data: saved });
+    const message = req.body.feedback ?? req.body.message ?? "";
+    const payload = {
+      name: req.body.name ?? null,
+      email: req.body.email ?? null,
+      phone: req.body.phone ?? null,
+      message,
+      rating: req.body.rating ? Number(req.body.rating) : null,
+      timestamp: req.body.timestamp ? new Date(req.body.timestamp) : undefined
+    };
+    const saved = await Feedback.create(payload);
+    return res.json({ status: "success", type: "feedback", data: serializeDoc(saved) });
   } catch (e) {
     console.error("Save feedback error:", e);
     return res.status(500).json({ error: "Could not save feedback" });
@@ -207,38 +173,158 @@ app.post("/api/feedback", (req, res) => {
 });
 
 // Admin / protected routes
-app.get("/api/appointments", requireAdmin, (_req, res) => res.json(readJsonArray("appointments.json")));
-app.get("/api/feedbacks", requireAdmin, (_req, res) => res.json(readJsonArray("feedback.json")));
-app.get("/api/payments", requireAdmin, (_req, res) => res.json(readJsonArray("payments.json")));
-
-app.delete("/api/appointments", requireAdmin, (_req, res) => {
+app.get("/api/appointments", requireAdmin, async (_req, res) => {
   try {
-    clearFile("appointments.json");
-    return res.json({ status: "success", message: "All appointments cleared. You can undo." });
+    const arr = await Appointment.find().sort({ timestamp: -1 }).lean();
+    // serialize id
+    const out = arr.map(a => {
+      a.id = String(a._id);
+      delete a._id;
+      delete a.__v;
+      return a;
+    });
+    res.json(out);
+  } catch (e) {
+    console.error("Fetch appointments error:", e);
+    res.status(500).json({ error: "Could not fetch appointments" });
+  }
+});
+
+app.get("/api/feedbacks", requireAdmin, async (_req, res) => {
+  try {
+    const arr = await Feedback.find().sort({ timestamp: -1 }).lean();
+    const out = arr.map(a => {
+      a.id = String(a._id);
+      delete a._id;
+      delete a.__v;
+      return a;
+    });
+    res.json(out);
+  } catch (e) {
+    console.error("Fetch feedbacks error:", e);
+    res.status(500).json({ error: "Could not fetch feedbacks" });
+  }
+});
+
+app.get("/api/payments", requireAdmin, async (_req, res) => {
+  try {
+    const arr = await Payment.find().sort({ timestamp: -1 }).lean();
+    const out = arr.map(a => {
+      a.id = String(a._id);
+      delete a._id;
+      delete a.__v;
+      return a;
+    });
+    res.json(out);
+  } catch (e) {
+    console.error("Fetch payments error:", e);
+    res.status(500).json({ error: "Could not fetch payments" });
+  }
+});
+
+// -------------------- Clear (with timestamped backup) --------------------
+// Helper: create backup for collection
+async function createBackupForCollection(collectionName, dataArray, note = null) {
+  try {
+    await Backup.create({
+      collectionName,
+      data: dataArray,
+      note
+    });
+    console.log(`Backup created for ${collectionName} (${dataArray.length} items)`);
+  } catch (e) {
+    console.error(`Failed to create backup for ${collectionName}:`, e);
+  }
+}
+
+// Appointments clear
+app.delete("/api/appointments", requireAdmin, async (_req, res) => {
+  try {
+    const current = await Appointment.find().lean();
+    await createBackupForCollection("appointments", current, "Cleared by admin");
+    await Appointment.deleteMany({});
+    return res.json({ status: "success", message: "All appointments cleared. You can undo (restores the latest backup)." });
   } catch (e) {
     console.error("Clear appointments error:", e);
     return res.status(500).json({ error: "Could not clear appointments" });
   }
 });
-app.delete("/api/feedbacks", requireAdmin, (_req, res) => {
+
+// Feedback clear
+app.delete("/api/feedbacks", requireAdmin, async (_req, res) => {
   try {
-    clearFile("feedback.json");
-    return res.json({ status: "success", message: "All feedback cleared. You can undo." });
+    const current = await Feedback.find().lean();
+    await createBackupForCollection("feedback", current, "Cleared by admin");
+    await Feedback.deleteMany({});
+    return res.json({ status: "success", message: "All feedback cleared. You can undo (restores the latest backup)." });
   } catch (e) {
     console.error("Clear feedback error:", e);
     return res.status(500).json({ error: "Could not clear feedback" });
   }
 });
-app.post("/api/appointments/undo", requireAdmin, (_req, res) => {
-  if (undoClear("appointments.json")) return res.json({ status: "success", message: "Appointments restored from backup" });
-  return res.status(400).json({ error: "No backup available" });
-});
-app.post("/api/feedbacks/undo", requireAdmin, (_req, res) => {
-  if (undoClear("feedback.json")) return res.json({ status: "success", message: "Feedback restored from backup" });
-  return res.status(400).json({ error: "No backup available" });
+
+// -------------------- Undo (restore latest backup) --------------------
+async function restoreLatestBackupForCollection(collectionName) {
+  // find latest backup
+  const latest = await Backup.findOne({ collectionName }).sort({ createdAt: -1 }).lean();
+  if (!latest) return { ok: false, message: "No backup available" };
+
+  const docs = latest.data || [];
+
+  // Determine target model
+  const modelMap = {
+    appointments: Appointment,
+    feedback: Feedback,
+    payments: Payment
+  };
+  const model = modelMap[collectionName];
+  if (!model) return { ok: false, message: "Unknown collection for restore" };
+
+  // restore: clear collection, then insert docs preserving existing _id fields
+  // To preserve original _id, we pass docs as-is. If any inserted docs conflict, that is unlikely because we cleared the collection first.
+  try {
+    await model.deleteMany({});
+    if (docs.length) {
+      // If the backup items have _id as ObjectId-like strings, they will be used as-is.
+      // Convert any _id strings to ObjectId where appropriate.
+      const prepared = docs.map(d => {
+        const copy = { ...d };
+        // ensure no __v leaking
+        delete copy.__v;
+        return copy;
+      });
+      await model.insertMany(prepared, { ordered: false });
+    }
+    return { ok: true, message: "Restored from latest backup", restoredCount: docs.length };
+  } catch (e) {
+    console.error("Restore error:", e);
+    return { ok: false, message: "Restore failed: " + e.message };
+  }
+}
+
+app.post("/api/appointments/undo", requireAdmin, async (_req, res) => {
+  try {
+    const result = await restoreLatestBackupForCollection("appointments");
+    if (!result.ok) return res.status(400).json({ error: result.message });
+    return res.json({ status: "success", message: result.message, restored: result.restoredCount });
+  } catch (e) {
+    console.error("Appointments undo error:", e);
+    return res.status(500).json({ error: "Could not undo appointments clear" });
+  }
 });
 
-// Admin Login / Logout
+app.post("/api/feedbacks/undo", requireAdmin, async (_req, res) => {
+  try {
+    const result = await restoreLatestBackupForCollection("feedback");
+    if (!result.ok) return res.status(400).json({ error: result.message });
+    return res.json({ status: "success", message: result.message, restored: result.restoredCount });
+  } catch (e) {
+    console.error("Feedback undo error:", e);
+    return res.status(500).json({ error: "Could not undo feedback clear" });
+  }
+});
+
+// -------------------- Admin Login / Logout --------------------
 app.post("/api/admin/login", (req, res) => {
   const { username, password } = req.body;
   if (username === ADMIN_USERNAME && password === ADMIN_PASSWORD) {
@@ -258,31 +344,37 @@ app.get("/api/admin/logout", (req, res) => {
   });
 });
 
-// Admin pages (protected)
+// -------------------- Admin pages (protected) --------------------
 app.get("/admin/dashboard", requireAdmin, (_req, res) => res.sendFile(path.join(__dirname, "public", "admin", "admindash.html")));
 app.get("/admin/appointments", requireAdmin, (_req, res) => res.sendFile(path.join(__dirname, "public", "admin", "admindash.html")));
 app.get("/admin/feedback", requireAdmin, (_req, res) => res.sendFile(path.join(__dirname, "public", "admin", "afeedback.html")));
 app.get("/admin/admin-login.html", (_req, res) => res.sendFile(path.join(__dirname, "public", "admin", "admin-login.html")));
 
-// PATCH update appointment (for admin 'Mark Done')
-app.patch("/api/appointments/:id", requireAdmin, (req, res) => {
+// -------------------- PATCH update appointment (for admin 'Mark Done') --------------------
+app.patch("/api/appointments/:id", requireAdmin, async (req, res) => {
   try {
     const id = req.params.id;
-    const arr = readJsonArray("appointments.json");
-    const idx = arr.findIndex(a => String(a.id) === String(id));
-    if (idx === -1) return res.status(404).json({ error: "Appointment not found" });
-    arr[idx] = { ...arr[idx], ...req.body, timestamp: arr[idx].timestamp || new Date().toISOString() };
-    writeJsonArray("appointments.json", arr);
-    return res.json({ status: "success", data: arr[idx] });
+    // Find by _id or by custom id field: support both
+    let updated = null;
+    // Try find by ObjectId first
+    try {
+      updated = await Appointment.findByIdAndUpdate(id, { ...req.body }, { new: true });
+    } catch (err) {
+      // ignore and try fallback
+    }
+    if (!updated) {
+      // fallback: search by string id field (if older items were stored with id)
+      updated = await Appointment.findOneAndUpdate({ id: id }, { ...req.body }, { new: true });
+    }
+    if (!updated) return res.status(404).json({ error: "Appointment not found" });
+    return res.json({ status: "success", data: serializeDoc(updated) });
   } catch (e) {
     console.error("Patch appointment error:", e);
     return res.status(500).json({ error: "Could not update appointment" });
   }
 });
 
-// -------------------------
-// Paytm Integration endpoints (kept minimal here)
-// -------------------------
+// -------------------- Paytm Integration endpoints (kept minimal here) -------------------------
 app.post("/api/paytm/order", async (req, res) => {
   // keep your previous implementation here if using Paytm.
   // For brevity I've omitted the detailed Paytm code in this snippet.
@@ -292,7 +384,27 @@ app.post("/api/paytm/callback", async (req, res) => {
   return res.status(501).send("Paytm callback placeholder");
 });
 
-// Start server
+// -------------------- Payments saving helper (if you want to record payments) --------------
+async function pushPaymentToDB(obj) {
+  try {
+    const saved = await Payment.create({
+      order_id: obj.order_id ?? null,
+      txn_id: obj.txn_id ?? null,
+      amount: obj.amount ?? null,
+      status: obj.status ?? null,
+      gateway_response: obj.gateway_response ?? null,
+      timestamp: obj.timestamp ? new Date(obj.timestamp) : undefined
+    });
+    return serializeDoc(saved);
+  } catch (e) {
+    console.error("pushPaymentToDB error:", e);
+    throw e;
+  }
+}
+
+// Example usage inside Paytm callback: await pushPaymentToDB(paymentObj);
+
+// -------------------- Start server --------------------
 app.listen(PORT, () => {
   console.log(`✅ Server running on port ${PORT}`);
 });
