@@ -121,15 +121,26 @@ const Backup = mongoose.model("Backup", BackupSchema);
 
 // -------------------- Helpers --------------------
 // Convert Mongoose doc (or array of docs) to plain objects with `id` (string) for frontend compatibility
+// Helper: serialize Mongoose doc to plain object with formatted timestamp
 function serializeDoc(doc) {
   if (!doc) return doc;
   if (Array.isArray(doc)) return doc.map(d => serializeDoc(d));
+
   const o = doc.toObject ? doc.toObject() : { ...doc };
   o.id = String(o._id);
   delete o._id;
   delete o.__v;
+
+  // Format timestamp as YYYY/MM/DD HH:MM:SS
+  if (o.timestamp) {
+    const d = new Date(o.timestamp);
+    const pad = (n) => String(n).padStart(2, "0");
+    o.timestamp = `${d.getFullYear()}/${pad(d.getMonth()+1)}/${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+  }
+
   return o;
 }
+
 
 // middleware: requireAdmin (unchanged)
 function requireAdmin(req, res, next) {
