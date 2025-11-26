@@ -36,7 +36,7 @@ async function adminLogin(e) {
     const data = await res.json();
 
     if (data.success) {
-      window.location.href = "admindash.html"; // adjust path if needed
+      window.location.href = "admindash.html";
     } else {
       const errEl = document.getElementById("errorMsg");
       if (errEl) errEl.textContent = "Invalid login!";
@@ -51,8 +51,14 @@ async function adminLogin(e) {
 // ------------------------------
 // LOGOUT
 // ------------------------------
-function adminLogout() {
-  window.location.href = API.logout;
+async function logout() {
+  try {
+    await fetch(API.logout, { credentials: "include" });
+  } catch (err) {
+    console.error("logout error:", err);
+  } finally {
+    window.location.href = "/admin/admin-login.html";
+  }
 }
 
 // ------------------------------
@@ -262,19 +268,6 @@ async function undoFeedbacks() {
 }
 
 // ------------------------------
-// LOGOUT
-// ------------------------------
-async function logout() {
-  try {
-    await fetch(API.logout, { credentials: "include" });
-  } catch (err) {
-    console.error("logout error:", err);
-  } finally {
-    window.location.href="/admin/admin-login.html";
-  }
-}
-
-// ------------------------------
 // SUBMISSIONS & PAYMENTS
 // ------------------------------
 async function loadSubmissions() {
@@ -341,27 +334,16 @@ setInterval(async()=>{
 // INIT
 // ------------------------------
 document.addEventListener("DOMContentLoaded", () => {
-  // Only initialize dashboard if the dashboard exists
   if (document.getElementById("appointmentsCount")) {
     renderDashboard();
 
     // Attach Clear & Undo buttons
-    const clearAppointmentsBtn = document.getElementById("clearAppointmentsBtn");
-    if (clearAppointmentsBtn) clearAppointmentsBtn.addEventListener("click", clearAppointments);
-
-    const clearFeedbacksBtn = document.getElementById("clearFeedbacksBtn");
-    if (clearFeedbacksBtn) clearFeedbacksBtn.addEventListener("click", clearFeedbacks);
-
-    const undoAppointmentsBtn = document.getElementById("undoAppointmentsBtn");
-    if (undoAppointmentsBtn) undoAppointmentsBtn.addEventListener("click", undoAppointments);
-
-    const undoFeedbacksBtn = document.getElementById("undoFeedbacksBtn");
-    if (undoFeedbacksBtn) undoFeedbacksBtn.addEventListener("click", undoFeedbacks);
+    document.getElementById("clearAppointmentsBtn")?.addEventListener("click", clearAppointments);
+    document.getElementById("clearFeedbacksBtn")?.addEventListener("click", clearFeedbacks);
+    document.getElementById("undoAppointmentsBtn")?.addEventListener("click", undoAppointments);
+    document.getElementById("undoFeedbacksBtn")?.addEventListener("click", undoFeedbacks);
   }
 
-  // Attach login event if login form exists
-  const loginForm = document.getElementById("loginForm");
-  if (loginForm) {
-    loginForm.addEventListener("submit", adminLogin);
-  }
+  // Attach login form if exists
+  document.getElementById("loginForm")?.addEventListener("submit", adminLogin);
 });
