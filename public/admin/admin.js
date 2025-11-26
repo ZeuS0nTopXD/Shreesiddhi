@@ -52,7 +52,6 @@ async function adminLogin(e) {
 // LOGOUT
 // ------------------------------
 function adminLogout() {
-  // keep behavior that triggers server-side redirect to login page
   window.location.href = API.logout;
 }
 
@@ -62,12 +61,12 @@ function adminLogout() {
 async function fetchAppointments() {
   const res = await fetch(API.appointments, { credentials: "include" });
   if (res.status === 401) {
-    // session expired or not logged in
     window.location.href = "/admin/admin-login.html";
     return [];
   }
   return res.json();
 }
+
 async function fetchFeedback() {
   const res = await fetch(API.feedbacks, { credentials: "include" });
   if (res.status === 401) {
@@ -158,7 +157,6 @@ async function markDone(id) {
       alert("Failed to mark done");
       return;
     }
-    // refresh dashboard after update
     await renderDashboard();
   } catch (err) {
     console.error("markDone error:", err);
@@ -222,6 +220,7 @@ async function clearAppointments() {
     alert("Failed to clear appointments");
   }
 }
+
 async function clearFeedbacks() {
   if(!confirm("Clear all feedback?")) return;
   try {
@@ -237,6 +236,7 @@ async function clearFeedbacks() {
     alert("Failed to clear feedback");
   }
 }
+
 async function undoAppointments() {
   try {
     const res = await fetch(API.undoAppointments, {method:"POST", credentials:"include"});
@@ -248,6 +248,7 @@ async function undoAppointments() {
     alert("Failed to undo");
   }
 }
+
 async function undoFeedbacks() {
   try {
     const res = await fetch(API.undoFeedbacks, {method:"POST", credentials:"include"});
@@ -315,7 +316,7 @@ function renderAdminTable(type, data){
 
   headerEl.innerHTML = `<tr>${Object.keys(data[0]).map(k=>`<th>${k}</th>`).join("")}</tr>`;
   bodyEl.innerHTML = data.map(r=>{
-    const statusClass = r.status==='success'?"status done":r.status==='failure'?"status pending":"";
+    const statusClass = r.status==='success'?"status done":r.status==='failure'?"status pending":""; 
     return `<tr class="${statusClass}">${Object.values(r).map(v=>`<td>${v}</td>`).join("")}</tr>`;
   }).join("");
 }
@@ -343,6 +344,19 @@ document.addEventListener("DOMContentLoaded", () => {
   // Only initialize dashboard if the dashboard exists
   if (document.getElementById("appointmentsCount")) {
     renderDashboard();
+
+    // Attach Clear & Undo buttons
+    const clearAppointmentsBtn = document.getElementById("clearAppointmentsBtn");
+    if (clearAppointmentsBtn) clearAppointmentsBtn.addEventListener("click", clearAppointments);
+
+    const clearFeedbacksBtn = document.getElementById("clearFeedbacksBtn");
+    if (clearFeedbacksBtn) clearFeedbacksBtn.addEventListener("click", clearFeedbacks);
+
+    const undoAppointmentsBtn = document.getElementById("undoAppointmentsBtn");
+    if (undoAppointmentsBtn) undoAppointmentsBtn.addEventListener("click", undoAppointments);
+
+    const undoFeedbacksBtn = document.getElementById("undoFeedbacksBtn");
+    if (undoFeedbacksBtn) undoFeedbacksBtn.addEventListener("click", undoFeedbacks);
   }
 
   // Attach login event if login form exists
