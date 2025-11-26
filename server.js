@@ -131,7 +131,7 @@ function serializeDoc(doc) {
   delete o._id;
   delete o.__v;
 
-  // Format timestamp as YYYY/MM/DD HH:MM:SS
+  // Format timestamp as YYYY/MM/DD HH:MM:SS in local time
   if (o.timestamp) {
     const d = new Date(o.timestamp);
     const pad = (n) => String(n).padStart(2, "0");
@@ -140,6 +140,7 @@ function serializeDoc(doc) {
 
   return o;
 }
+
 
 
 // middleware: requireAdmin (unchanged)
