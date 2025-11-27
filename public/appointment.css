@@ -64,10 +64,8 @@ body {
     font-size: 19px;
     transition: color 0.3s;
 }
-.navbar a.active {
-    color: red;
-}
-.navbar a:hover {
+.nav-center a:hover,
+.nav-center a.active {
     color: #e63946;
 }
 

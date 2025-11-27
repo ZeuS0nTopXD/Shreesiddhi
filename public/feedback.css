@@ -59,8 +59,9 @@ body {
     font-weight: 500;
     font-size: 19px;  /* 15 → 19 */
 }
-.navbar a.active {
-    color: red;
+.nav-center a:hover,
+.nav-center a.active {
+    color: #e63946;
 }
 
 /* FEEDBACK SECTION */
