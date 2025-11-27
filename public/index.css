@@ -237,6 +237,9 @@ body {
 .footer-section a:last-child {
     margin-bottom: 0;
 }
+.footer-section a:hover {
+    color: #e63946;
+}
 
 /* SOCIAL ICONS */
 .social-icons {
