@@ -25,48 +25,78 @@ async function adminLogin(e) {
   const username = document.getElementById("username")?.value;
   const password = document.getElementById("password")?.value;
 
-  const res = await fetch(API.login, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ username, password }),
-    credentials: "include"
-  }).then(r => r.json());
+  try {
+    const res = await fetch(API.login, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ username, password }),
+      credentials: "include"
+    });
 
-if (res.success) {
-  window.location.href = "admindash.html"; // adjust path if needed
-} else {
-  document.getElementById("errorMsg").textContent = "Invalid login!";
-}
+    const data = await res.json();
+
+    if (data.success) {
+      window.location.href = "admindash.html";
+    } else {
+      const errEl = document.getElementById("errorMsg");
+      if (errEl) errEl.textContent = "Invalid login!";
+    }
+  } catch (err) {
+    console.error("Login error:", err);
+    const errEl = document.getElementById("errorMsg");
+    if (errEl) errEl.textContent = "Login failed (network)";
+  }
 }
 
 // ------------------------------
 // LOGOUT
 // ------------------------------
-function adminLogout() {
-  window.location.href = API.logout;
+async function logout() {
+  try {
+    await fetch(API.logout, { credentials: "include" });
+  } catch (err) {
+    console.error("logout error:", err);
+  } finally {
+    window.location.href = "/admin/admin-login.html";
+  }
 }
 
 // ------------------------------
 // DASHBOARD
 // ------------------------------
 async function fetchAppointments() {
-  return fetch(API.appointments, { credentials: "include" }).then(r => r.json());
+  const res = await fetch(API.appointments, { credentials: "include" });
+  if (res.status === 401) {
+    window.location.href = "/admin/admin-login.html";
+    return [];
+  }
+  return res.json();
 }
+
 async function fetchFeedback() {
-  return fetch(API.feedbacks, { credentials: "include" }).then(r => r.json());
+  const res = await fetch(API.feedbacks, { credentials: "include" });
+  if (res.status === 401) {
+    window.location.href = "/admin/admin-login.html";
+    return [];
+  }
+  return res.json();
 }
 
 async function renderDashboard() {
-  appointmentsData = await fetchAppointments();
-  const feedback = await fetchFeedback();
+  try {
+    appointmentsData = await fetchAppointments();
+    const feedback = await fetchFeedback();
 
-  document.getElementById("appointmentsCount").textContent = appointmentsData.length;
-  document.getElementById("feedbackCount").textContent = feedback.length;
-  document.getElementById("patientsCount").textContent = new Set(appointmentsData.map(a => a.email)).size;
-  document.getElementById("revenueCount").textContent = "₹" + appointmentsData.reduce((s,a)=>s+(Number(a.fee)||0),0);
+    document.getElementById("appointmentsCount").textContent = appointmentsData.length;
+    document.getElementById("feedbackCount").textContent = feedback.length;
+    document.getElementById("patientsCount").textContent = new Set(appointmentsData.map(a => a.email)).size;
+    document.getElementById("revenueCount").textContent = "₹" + appointmentsData.reduce((s,a) => s + (Number(a.fee) || 0), 0);
 
-  renderAppointmentsTable();
-  renderFeedbackTable(feedback);
+    renderAppointmentsTable();
+    renderFeedbackTable(feedback);
+  } catch (err) {
+    console.error("renderDashboard error:", err);
+  }
 }
 
 // ------------------------------
@@ -74,12 +104,14 @@ async function renderDashboard() {
 // ------------------------------
 function showSection(id, el) {
   document.querySelectorAll(".section").forEach(s => s.classList.remove("active"));
-  document.getElementById(id).classList.add("active");
+  const target = document.getElementById(id);
+  if (target) target.classList.add("active");
 
   document.querySelectorAll(".sidebar a").forEach(a => a.classList.remove("active"));
-  el.classList.add("active");
+  if (el) el.classList.add("active");
 
-  document.querySelector(".header h1").textContent = id.charAt(0).toUpperCase() + id.slice(1);
+  const header = document.querySelector(".header h1");
+  if (header) header.textContent = id.charAt(0).toUpperCase() + id.slice(1);
 
   if (id === "submissions") loadSubmissions();
   if (id === "feedback") loadFeedbacks();
@@ -92,10 +124,12 @@ function renderAppointmentsTable() {
   const aptTable = document.getElementById("appointmentsTable");
   const aptHeader = document.getElementById("appointmentsHeader");
 
+  if (!aptTable || !aptHeader) return;
+
   aptTable.innerHTML = "";
   aptHeader.innerHTML = "";
 
-  if (!appointmentsData.length) {
+  if (!appointmentsData || !appointmentsData.length) {
     aptTable.innerHTML = `<tr><td colspan='7' class='empty-row'>No appointments</td></tr>`;
     return;
   }
@@ -105,7 +139,7 @@ function renderAppointmentsTable() {
 
   aptTable.innerHTML = appointmentsData.map(a => {
     return `<tr>
-      ${keys.map(k => `<td>${a[k] ?? "-"}</td>`).join('')}
+      ${keys.map(k => `<td>${(a[k] ?? "-")}</td>`).join('')}
       <td><span class="status ${a.status==='done'?'done':'pending'}">${a.status ? a.status.charAt(0).toUpperCase() + a.status.slice(1) : 'Pending'}</span></td>
       <td><button class="action-btn" onclick="markDone('${a.id}')">Mark Done</button></td>
     </tr>`;
@@ -113,13 +147,27 @@ function renderAppointmentsTable() {
 }
 
 async function markDone(id) {
-  await fetch(`${API.appointments}/${id}`, {
-    method: "PATCH",
-    headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify({status:'done'}),
-    credentials: "include"
-  });
-  renderDashboard();
+  try {
+    const res = await fetch(`${API.appointments}/${id}`, {
+      method: "PATCH",
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({status:'done'}),
+      credentials: "include"
+    });
+    if (res.status === 401) {
+      window.location.href = "/admin/admin-login.html";
+      return;
+    }
+    if (!res.ok) {
+      console.error("markDone failed", await res.text());
+      alert("Failed to mark done");
+      return;
+    }
+    await renderDashboard();
+  } catch (err) {
+    console.error("markDone error:", err);
+    alert("Network error while marking done");
+  }
 }
 
 // ------------------------------
@@ -129,25 +177,27 @@ function renderFeedbackTable(feedback) {
   const fbTable = document.getElementById("feedbackTable");
   const fbHeader = document.getElementById("feedbackHeader");
 
+  if (!fbTable || !fbHeader) return;
+
   fbTable.innerHTML = "";
   fbHeader.innerHTML = "";
 
-  if (!feedback.length) {
+  if (!feedback || !feedback.length) {
     fbTable.innerHTML = `<tr><td colspan="5" class="empty-row">No feedback</td></tr>`;
     return;
   }
 
   const keys = Object.keys(feedback[0]);
   fbHeader.innerHTML = `<tr>${keys.map(k => `<th>${k.charAt(0).toUpperCase()+k.slice(1)}</th>`).join('')}</tr>`;
-  fbTable.innerHTML = feedback.map(f=>`<tr>${keys.map(k=>`<td>${f[k]??'-'}</td>`).join('')}</tr>`).join('');
+  fbTable.innerHTML = feedback.map(f=>`<tr>${keys.map(k=>`<td>${(f[k]??'-')}</td>`).join('')}</tr>`).join('');
 }
 
 // ------------------------------
 // FILTER APPOINTMENTS
 // ------------------------------
 function applyFilters() {
-  const search = document.getElementById("searchInput").value.toLowerCase();
-  const statusFilter = document.getElementById("statusFilter").value;
+  const search = (document.getElementById("searchInput")?.value ?? "").toLowerCase();
+  const statusFilter = document.getElementById("statusFilter")?.value ?? "all";
 
   const rows = document.querySelectorAll("#appointmentsTable tr");
   rows.forEach(row => {
@@ -163,31 +213,58 @@ function applyFilters() {
 // ------------------------------
 async function clearAppointments() {
   if(!confirm("Clear all appointments?")) return;
-  await fetch(API.clearAppointments, {method:"DELETE", credentials:"include"});
-  renderDashboard();
-}
-async function clearFeedbacks() {
-  if(!confirm("Clear all feedback?")) return;
-  await fetch(API.clearFeedbacks, {method:"DELETE", credentials:"include"});
-  renderDashboard();
-}
-async function undoAppointments() {
-  const res = await fetch(API.undoAppointments, {method:"POST", credentials:"include"}).then(r=>r.json());
-  alert(res.message);
-  renderDashboard();
-}
-async function undoFeedbacks() {
-  const res = await fetch(API.undoFeedbacks, {method:"POST", credentials:"include"}).then(r=>r.json());
-  alert(res.message);
-  renderDashboard();
+  try {
+    const res = await fetch(API.clearAppointments, {method:"DELETE", credentials:"include"});
+    if (res.status === 401) {
+      window.location.href = "/admin/admin-login.html";
+      return;
+    }
+    await renderDashboard();
+    alert("Appointments cleared. You can undo from the dashboard.");
+  } catch (err) {
+    console.error("clearAppointments error:", err);
+    alert("Failed to clear appointments");
+  }
 }
 
-// ------------------------------
-// LOGOUT
-// ------------------------------
-async function logout() {
-  await fetch(API.logout, { credentials: "include" });
-  window.location.href="/admin/admin-login.html";
+async function clearFeedbacks() {
+  if(!confirm("Clear all feedback?")) return;
+  try {
+    const res = await fetch(API.clearFeedbacks, {method:"DELETE", credentials:"include"});
+    if (res.status === 401) {
+      window.location.href = "/admin/admin-login.html";
+      return;
+    }
+    await renderDashboard();
+    alert("Feedback cleared. You can undo from the dashboard.");
+  } catch (err) {
+    console.error("clearFeedbacks error:", err);
+    alert("Failed to clear feedback");
+  }
+}
+
+async function undoAppointments() {
+  try {
+    const res = await fetch(API.undoAppointments, {method:"POST", credentials:"include"});
+    const data = await res.json();
+    alert(data.message || "Undo completed");
+    await renderDashboard();
+  } catch (err) {
+    console.error("undoAppointments error:", err);
+    alert("Failed to undo");
+  }
+}
+
+async function undoFeedbacks() {
+  try {
+    const res = await fetch(API.undoFeedbacks, {method:"POST", credentials:"include"});
+    const data = await res.json();
+    alert(data.message || "Undo completed");
+    await renderDashboard();
+  } catch (err) {
+    console.error("undoFeedbacks error:", err);
+    alert("Failed to undo");
+  }
 }
 
 // ------------------------------
@@ -199,6 +276,12 @@ async function loadSubmissions() {
       fetch(API.appointments, {credentials:"include"}),
       fetch(API.payments, {credentials:"include"})
     ]);
+
+    if (subsRes.status === 401 || payRes.status === 401) {
+      window.location.href = "/admin/admin-login.html";
+      return;
+    }
+
     const submissions = await subsRes.json();
     const payments = await payRes.json();
 
@@ -206,8 +289,10 @@ async function loadSubmissions() {
     renderAdminTable("payments", payments);
   } catch(err) {
     console.error(err);
-    document.getElementById("submissionsBody").innerHTML = `<tr><td colspan='5' class='empty-row'>Failed to load submissions</td></tr>`;
-    document.getElementById("paymentsBody").innerHTML = `<tr><td colspan='5' class='empty-row'>Failed to load payments</td></tr>`;
+    const sb = document.getElementById("submissionsBody");
+    const pb = document.getElementById("paymentsBody");
+    if (sb) sb.innerHTML = `<tr><td colspan='5' class='empty-row'>Failed to load submissions</td></tr>`;
+    if (pb) pb.innerHTML = `<tr><td colspan='5' class='empty-row'>Failed to load payments</td></tr>`;
   }
 }
 
@@ -215,14 +300,16 @@ function renderAdminTable(type, data){
   const headerEl = document.getElementById(type+"Header");
   const bodyEl = document.getElementById(type+"Body");
 
-  if(!data.length){
+  if(!headerEl || !bodyEl) return;
+
+  if(!data || !data.length){
     bodyEl.innerHTML=`<tr><td colspan='5' class='empty-row'>No ${type} yet</td></tr>`;
     return;
   }
 
   headerEl.innerHTML = `<tr>${Object.keys(data[0]).map(k=>`<th>${k}</th>`).join("")}</tr>`;
   bodyEl.innerHTML = data.map(r=>{
-    const statusClass = r.status==='success'?"status done":r.status==='failure'?"status pending":"";
+    const statusClass = r.status==='success'?"status done":r.status==='failure'?"status pending":""; 
     return `<tr class="${statusClass}">${Object.values(r).map(v=>`<td>${v}</td>`).join("")}</tr>`;
   }).join("");
 }
@@ -247,18 +334,16 @@ setInterval(async()=>{
 // INIT
 // ------------------------------
 document.addEventListener("DOMContentLoaded", () => {
-  renderDashboard();
-});
-
-document.addEventListener("DOMContentLoaded", () => {
-  // Only initialize dashboard if the dashboard exists
   if (document.getElementById("appointmentsCount")) {
     renderDashboard();
+
+    // Attach Clear & Undo buttons
+    document.getElementById("clearAppointmentsBtn")?.addEventListener("click", clearAppointments);
+    document.getElementById("clearFeedbacksBtn")?.addEventListener("click", clearFeedbacks);
+    document.getElementById("undoAppointmentsBtn")?.addEventListener("click", undoAppointments);
+    document.getElementById("undoFeedbacksBtn")?.addEventListener("click", undoFeedbacks);
   }
 
-  // Attach login event if login form exists
-  const loginForm = document.getElementById("loginForm");
-  if (loginForm) {
-    loginForm.addEventListener("submit", adminLogin);
-  }
+  // Attach login form if exists
+  document.getElementById("loginForm")?.addEventListener("submit", adminLogin);
 });

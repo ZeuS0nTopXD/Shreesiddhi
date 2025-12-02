@@ -11,6 +11,12 @@ const PaytmChecksum = require("paytmchecksum"); // kept if Paytm used
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// If behind a proxy (Render), allow secure cookies to work correctly
+// and trust proxy for secure cookies
+if (process.env.NODE_ENV === "production") {
+  app.set("trust proxy", 1);
+}
+
 // -------------------- Middleware --------------------
 app.use(cors({ origin: true, credentials: true }));
 app.use(express.json({ limit: "1mb" }));
@@ -116,15 +122,27 @@ const Payment = mongoose.model("Payment", PaymentSchema);
 const Backup = mongoose.model("Backup", BackupSchema);
 
 // -------------------- Helpers --------------------
+// Convert Mongoose doc (or array of docs) to plain objects with `id` (string) for frontend compatibility
 function serializeDoc(doc) {
   if (!doc) return doc;
   if (Array.isArray(doc)) return doc.map(d => serializeDoc(d));
+
   const o = doc.toObject ? doc.toObject() : { ...doc };
   o.id = String(o._id);
   delete o._id;
   delete o.__v;
+
+  // Format timestamp as YYYY/MM/DD HH:MM:SS in local time
+  if (o.timestamp) {
+    const d = new Date(o.timestamp);
+    const pad = (n) => String(n).padStart(2, "0");
+    o.timestamp = `${d.getFullYear()}/${pad(d.getMonth()+1)}/${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+  }
+
   return o;
 }
+
+
 
 function requireAdmin(req, res, next) {
   if (req.session && req.session.admin) return next();
@@ -189,8 +207,16 @@ app.get("/api/payments", requireAdmin, async (_req, res) => {
 
 // -------------------- Backup & Undo --------------------
 async function createBackupForCollection(collectionName, dataArray, note = null) {
-  try { await Backup.create({ collectionName, data: dataArray, note }); console.log(`Backup created for ${collectionName} (${dataArray.length} items)`); }
-  catch (e) { console.error(`Failed to create backup for ${collectionName}:`, e); }
+  try {
+    await Backup.create({
+      collectionName,
+      data: dataArray,
+      note
+    });
+    console.log(`Backup created for ${collectionName} (${dataArray.length} items)`);
+  } catch (e) {
+    console.error(`Failed to create backup for ${collectionName}:`, e);
+  }
 }
 
 async function restoreLatestBackupForCollection(collectionName) {
@@ -200,10 +226,21 @@ async function restoreLatestBackupForCollection(collectionName) {
   const modelMap = { appointments: Appointment, feedback: Feedback, payments: Payment };
   const model = modelMap[collectionName];
   if (!model) return { ok: false, message: "Unknown collection for restore" };
+
+  // restore: clear collection, then insert docs preserving existing _id fields
+  // To preserve original _id, we pass docs as-is. If any inserted docs conflict, that is unlikely because we cleared the collection first.
   try {
+    // clear collection and re-insert
     await model.deleteMany({});
     if (docs.length) {
-      const prepared = docs.map(d => { const copy = { ...d }; delete copy.__v; return copy; });
+      // If the backup items have _id as ObjectId-like strings, they will be used as-is.
+      // Convert any _id strings to ObjectId where appropriate.
+      const prepared = docs.map(d => {
+        const copy = { ...d };
+        // ensure no __v leaking
+        delete copy.__v;
+        return copy;
+      });
       await model.insertMany(prepared, { ordered: false });
     }
     return { ok: true, message: "Restored from latest backup", restoredCount: docs.length };

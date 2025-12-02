@@ -130,6 +130,7 @@
       font-size: 14px;
       border-radius: 6px;
       cursor: pointer;
+      margin-left: 6px;
     }
 
     /* TABLES */
@@ -226,7 +227,8 @@
     <div id="appointments" class="section">
       <h2>
         <span>Appointments</span>
-        <button class="clear-btn" onclick="clearAppointments()">Clear All</button>
+        <button class="clear-btn" id="clearAppointmentsBtn" onclick="clearAppointments()">Clear All</button>
+        <button class="clear-btn" id="undoAppointmentsBtn" onclick="undoAppointments()">Undo</button>
       </h2>
       <div class="filter-bar">
         <input type="text" id="searchInput" placeholder="Search by name/email..." onkeyup="applyFilters()">
@@ -248,7 +250,8 @@
     <div id="feedback" class="section">
       <h2>
         <span>Feedback</span>
-        <button class="clear-btn" onclick="clearFeedback()">Clear All</button>
+        <button class="clear-btn" id="clearFeedbacksBtn" onclick="clearFeedbacks()">Clear All</button>
+        <button class="clear-btn" id="undoFeedbacksBtn" onclick="undoFeedbacks()">Undo</button>
       </h2>
       <table>
         <thead id="feedbackHeader"></thead>
