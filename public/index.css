@@ -106,18 +106,18 @@ body {
     align-items: center;
     padding: 60px 10%;
     background: linear-gradient(to right, #fdd49a, #f8b665);
-    min-height: 375px;    /* 300 → 375 */
+    min-height: 375px;
 }
 .hero-text {
     max-width: 50%;
 }
 .hero-text h2 {
-    font-size: 52px;   /* 42 → 52 */
+    font-size: 52px;
     font-weight: 700;
     margin: 0 0 18px;
 }
 .tagline {
-    font-size: 25px;   /* 20 → 25 */
+    font-size: 25px;
     margin-bottom: 31px;
 }
 .btn {
@@ -128,9 +128,7 @@ body {
     border-radius: 10px;
     cursor: pointer;
 }
-
-.btn:hover 
-{
+.btn:hover {
     background:#ffa600; 
     transform: scale(1.05);
 }
@@ -233,10 +231,10 @@ body {
     text-decoration: none;
     display: block;
     margin-bottom: 5px;
+    transition: all 0.3s ease;
 }
-.footer-section a:last-child {
-    margin-bottom: 0;
-}
+
+/* ⭐ NEW — Hover effect same as navbar ⭐ */
 .footer-section a:hover {
     color: #e63946;
 }
