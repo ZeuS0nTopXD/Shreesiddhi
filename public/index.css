@@ -1,16 +1,21 @@
+/* ----------------------------------
+   GLOBAL
+---------------------------------- */
 body {
     margin: 0;
     font-family: 'Poppins', sans-serif;
     background-color: #fffdf8;
-    font-size: 1.25em;   /* base text +25% */
+    font-size: 1.25em;
 }
 
-/* HEADER */
+/* ----------------------------------
+   HEADER
+---------------------------------- */
 .top-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 19px 50px;   /* 15x40 → 19x50 */
+    padding: 19px 50px;
     background: linear-gradient(to right, #fdd49a, #f8b665);
 }
 .header-left {
@@ -18,18 +23,18 @@ body {
     align-items: center;
 }
 .logo {
-    width: 88px;   /* 70 → 88 */
+    width: 88px;
     height: auto;
-    margin-right: 13px;  /* 10 → 13 */
+    margin-right: 13px;
 }
 .brand-title h1 {
-    font-size: 25px;   /* 20 → 25 */
+    font-size: 25px;
     font-weight: 700;
     margin: 0;
     letter-spacing: 1.25px;
 }
 .brand-title span {
-    font-size: 18px;   /* 14 → 18 */
+    font-size: 18px;
     font-weight: 500;
 }
 .header-right {
@@ -38,34 +43,45 @@ body {
 .dr-name {
     font-weight: 700;
     margin: 0;
-    font-size: 20px;   /* 16 → 20 */
+    font-size: 20px;
 }
 .dr-qual {
     margin: 0;
-    font-size: 16px;   /* 13 → 16 */
+    font-size: 16px;
 }
 
+/* ----------------------------------
+   NAVBAR
+---------------------------------- */
 /* NAVBAR */
-/* NAVBAR — Same as aboutus.css */
 .navbar {
     background: #fdf2dd;
     display: flex;
-    justify-content: center;
+    justify-content: center;  /* centers the nav-center */
+    align-items: center;
     padding: 15px 0;
+    position: relative;       /* for absolute positioning of admin button */
 }
 
-.navbar a {
+/* Center Menu Links */
+.nav-center {
+    display: flex;
+    justify-content: center;
+    gap: 40px;  /* space between items */
+}
+
+.nav-center a {
     text-decoration: none;
-    margin: 0 25px;          /* spacing same as aboutus.css */
     color: #000;
     font-weight: 500;
     font-size: 19px;
-    transition: 0.3s ease;
     position: relative;
+    padding: 5px 0;
+    transition: 0.3s ease;
 }
 
 /* Underline hover effect */
-.navbar a::after {
+.nav-center a::after {
     content: "";
     position: absolute;
     width: 0;
@@ -76,43 +92,9 @@ body {
     transition: 0.3s ease;
 }
 
-/* Hover underline + color */
-.navbar a:hover::after {
+.nav-center a:hover::after,
+.nav-center a.active::after {
     width: 100%;
-}
-
-.navbar a:hover {
-    color: #e63946;
-}
-
-/* Active link — same as hover */
-.navbar a.active {
-    color: #e63946;
-}
-
-.navbar a.active::after {
-    width: 100%;
-}
-
-
-/* Center navigation items */
-.nav-center {
-    display: flex;
-    justify-content: center;
-    flex-grow: 1;
-    gap: 30px;
-}
-
-/* Styled nav items */
-.nav-center a {
-    text-decoration: none;
-    padding: 8px 16px;
-    border-radius: 6px;
-    background: transparent;
-    color: #000;
-    font-weight: 500;
-    font-size: 18px;
-    transition: all 0.3s ease;
 }
 
 .nav-center a:hover,
@@ -120,23 +102,31 @@ body {
     color: #e63946;
 }
 
-/* Admin button (right side) */
-.nav-right .admin-btn {
+/* Admin Button on Right */
+.nav-right {
+    position: absolute;
+    right: 50px;  /* same as your navbar padding */
+}
+
+.admin-btn {
     background: linear-gradient(to right, #fdd49a, #f8b665);
     color: #fff;
-    padding: 10px 18px;
+    padding: 10px 20px;
     border-radius: 6px;
     font-weight: 600;
     font-size: 16px;
-    text-decoration: none;
-    transition: background 0.3s ease, transform 0.2s ease;
+    text-decoration: none !important;
+    transition: 0.3s ease;
 }
-.nav-right .admin-btn:hover {
+
+.admin-btn:hover {
     background: #faa123;
     transform: scale(1.05);
 }
 
-/* HERO */
+/* ----------------------------------
+   HERO SECTION
+---------------------------------- */
 .hero {
     display: flex;
     justify-content: space-between;
@@ -200,7 +190,9 @@ body {
     color: gray;
 }
 
-/* TREATMENTS */
+/* ----------------------------------
+   TREATMENTS
+---------------------------------- */
 .treatments {
     text-align: center;
     padding: 63px 38px;
@@ -244,7 +236,9 @@ body {
     color: #444;
 }
 
-/* FOOTER */
+/* ----------------------------------
+   FOOTER
+---------------------------------- */
 .footer {
     background: linear-gradient(to right, #fdd49a, #f8b665);
     display: flex;
@@ -270,8 +264,6 @@ body {
     margin-bottom: 5px;
     transition: all 0.3s ease;
 }
-
-/* ⭐ NEW — Hover effect same as navbar ⭐ */
 .footer-section a:hover {
     color: #e63946;
 }
@@ -305,7 +297,9 @@ body {
     color: #fff;
 }
 
-/* BOTTOM BAR */
+/* ----------------------------------
+   BOTTOM BAR
+---------------------------------- */
 .bottom-bar {
     background: #fdf2dd;
     text-align: center;
