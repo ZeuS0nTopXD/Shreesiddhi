@@ -58,11 +58,16 @@ body {
     color: #000;
     font-weight: 500;
     font-size: 19px;  /* 15 → 19 */
+    transition: color 0.3s ease, border-bottom 0.3s ease;
 }
-.nav-center a:hover,
-.nav-center a.active {
+
+/* --- Hover + Active Effect for NAVBAR --- */
+.navbar a:hover,
+.navbar a.active {
     color: #e63946;
+    border-bottom: 2px solid #e63946;
 }
+
 /* ABOUT US SECTION */
 .aboutus {
     width: 100%;
@@ -136,11 +141,10 @@ body {
     color: #5a6025;
     border-left: 5px solid #d4b24c;
     border-right: 5px solid #d4b24c;
-    width: 100%;      /* full width */
+    width: 100%;
     line-height: 1.4;
-    margin: 0;        /* remove extra white space */
+    margin: 0;
 }
-
 
 /* FOOTER */
 .footer {
@@ -165,10 +169,14 @@ body {
     color: #000;
     text-decoration: none;
     display: block;
-    margin-bottom: 5px;  /* 4 → 5 */
+    margin-bottom: 5px;
+    transition: color 0.3s ease, padding-left 0.3s ease;
 }
-.footer-section a:last-child {
-    margin-bottom: 0;
+
+/* --- Hover Effect for Footer Useful Links --- */
+.footer-section a:hover {
+    color: #e63946;
+    padding-left: 5px;
 }
 
 /* SOCIAL ICONS */

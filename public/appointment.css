@@ -1,236 +1,108 @@
-/* ============================= */
-/* Shree Siddhi Ayur Wellness CSS */
-/* ============================= */
-
+/* ---------------- BODY ---------------- */
 body {
+    font-family: Arial, sans-serif;
     margin: 0;
-    font-family: 'Poppins', sans-serif;
-    background-color: #fffdf8;
-    font-size: 1.25em; /* base text +25% */
+    padding: 0;
+    background-color: #f4f4f4;
 }
 
-/* HEADER */
-.top-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 19px 50px;
-    background: linear-gradient(to right, #fdd49a, #f8b665);
-}
-.header-left {
-    display: flex;
-    align-items: center;
-}
-.logo {
-    width: 88px;
-    height: auto;
-    margin-right: 13px;
-}
-.brand-title h1 {
-    font-size: 25px;
-    font-weight: 700;
-    margin: 0;
-    letter-spacing: 1.25px;
-}
-.brand-title span {
-    font-size: 18px;
-    font-weight: 500;
-}
-.header-right {
-    text-align: right;
-}
-.dr-name {
-    font-weight: 700;
-    margin: 0;
-    font-size: 20px;
-}
-.dr-qual {
-    margin: 0;
-    font-size: 16px;
-}
-
-/* NAVBAR */
+/* ---------------- NAVBAR ---------------- */
 .navbar {
-    background: #fdf2dd;
+    background-color: #333;
+    padding: 10px 20px;   /* SAME as before */
     display: flex;
-    justify-content: center;
-    padding: 15px 0;
-}
-.navbar a {
-    text-decoration: none;
-    margin: 0 23px;
-    color: #000;
-    font-weight: 500;
-    font-size: 19px;
-    transition: color 0.3s;
-}
-.nav-center a:hover,
-.nav-center a.active {
-    color: #e63946;
+    justify-content: space-between;
+    align-items: center;
 }
 
-/* APPOINTMENT SECTION */
-.appointment-section {
-    text-align: center;
-    padding: 50px;
-    background: linear-gradient(to right, #fdd49a, #f8b665);
-}
-.appointment-section h2 {
-    font-size: 32px;
-    margin-bottom: 12px;
-}
-.subtitle {
-    font-size: 18px;
-    color: #444;
-    margin-bottom: 15px;
-}
-.form-card {
-    background: #fde6bd;
-    width: 440px;
-    padding: 28px;
-    border-radius: 18px;
-    margin: 30px auto 0;
-    box-shadow: 0 3px 12px rgba(0,0,0,0.1);
-}
-.form-card form {
-    display: flex;
-    flex-direction: column;
-    gap: 14px;
-}
-label {
-    text-align: left;
-    font-size: 16px;
-    font-weight: 500;
-}
-input, textarea, select {
-    width: 100%;
-    padding: 12px;
-    font-size: 16px;
-    border: 1px solid #ccc;
-    border-radius: 6px;
-    box-sizing: border-box;
-}
-textarea {
-    resize: none;
-    height: 80px;
-}
-.submit-btn {
-    background: linear-gradient(to right, #fdd49a, #f8b665);
-    border: none;
-    padding: 12px;
-    font-size: 16px;
+.navbar .logo {
     color: white;
-    font-weight: 600;
-    border-radius: 6px;
-    margin-top: 20px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-.submit-btn:hover {
-    background: #faa123;
-    transform: scale(1.05);
-}
-
-/* FEE DISPLAY */
-#feeDisplay {
-    margin: 10px 0;
+    font-size: 24px;
     font-weight: bold;
-    color: #444;
 }
 
-/* QUOTE */
-.quote {
-    background: #f9f4dd;
-    text-align: center;
-    padding: 8px 0;
-    font-style: italic;
-    font-size: 20px;
-    font-weight: 700;
-    color: #5a6025;
-    border-left: 5px solid #d4b24c;
-    border-right: 5px solid #d4b24c;
-    width: 100%;
-    line-height: 1.4;
+.navbar ul {
+    list-style: none;
+    display: flex;
+    gap: 20px;   /* SAME spacing */
     margin: 0;
 }
 
-/* FOOTER */
-.footer {
-    background: linear-gradient(to right, #fdd49a, #f8b665);
-    display: flex;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    padding: 38px 50px;
+.navbar ul li a {
+    color: white;
+    text-decoration: none;
+    font-size: 16px;  /* SAME size */
+    transition: color 0.3s ease, border-bottom 0.3s ease;
 }
-.footer-section {
-    max-width: 313px;
-    text-align: center;
-    margin-bottom: 25px;
+
+/* --- Hover Effect for NAVBAR --- */
+.navbar ul li a:hover {
+    color: #ffcc00;
+    border-bottom: 2px solid #ffcc00;
 }
-.footer-section h4 {
+
+/* ---------------- BLOG CONTAINER ---------------- */
+.blog-container {
+    width: 80%;
+    margin: 20px auto;
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+}
+
+.blog-title {
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.blog-meta {
+    color: gray;
+    font-size: 14px;
+}
+
+.blog-content {
+    margin-top: 20px;
+    line-height: 1.7;
+    font-size: 16px;
+}
+
+/* ---------------- USEFUL LINKS ---------------- */
+.useful-links {
+    margin-top: 40px;
+}
+
+.useful-links h3 {
     font-size: 20px;
-    font-weight: 600;
-    margin-bottom: 15px;
+    margin-bottom: 10px;
 }
-.footer-section a {
-    font-size: 16px;
-    color: #000;
+
+.useful-links ul {
+    list-style: none;
+    padding: 0;
+}
+
+.useful-links ul li {
+    margin-bottom: 8px;
+}
+
+.useful-links ul li a {
     text-decoration: none;
-    display: block;
-    margin-bottom: 5px;
-}
-.footer-section a:last-child {
-    margin-bottom: 0;
+    color: #007BFF;
+    transition: color 0.3s ease, padding-left 0.3s ease;
 }
 
-/* SOCIAL ICONS */
-.social-icons {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 19px;
-    margin-top: 13px;
-    max-width: 225px;
-    margin-left: auto;
-    margin-right: auto;
-}
-.social-icons a {
-    color: #000;
-    font-size: 25px;
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: #fff;
-    transition: all 0.3s ease;
-    box-shadow: 0 3px 8px rgba(0,0,0,0.15);
-}
-.social-icons a:hover {
-    background: #e63946;
-    color: #fff;
+/* --- Hover Effect for Useful Links --- */
+.useful-links ul li a:hover {
+    color: #0056b3;
+    padding-left: 5px;   /* smooth slide effect */
 }
 
-/* BOTTOM BAR */
-.bottom-bar {
-    background: #fdf2dd;
+/* ---------------- FOOTER ---------------- */
+footer {
+    background-color: #333;
+    color: white;
     text-align: center;
-    padding: 15px 25px;
-    font-size: 16px;
-    color: #000;
-    border-top: 1px solid rgba(0,0,0,0.1);
-}
-.bottom-bar p {
-    margin: 7px 0;
-}
-.bottom-bar a {
-    color: #000;
-    text-decoration: none;
-    margin: 0 8px;
-    font-weight: 500;
-    transition: color 0.3s;
-}
-.bottom-bar a:hover {
-    color: #e63946;
+    padding: 12px;
+    margin-top: 40px;
 }

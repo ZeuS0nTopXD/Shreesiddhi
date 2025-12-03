@@ -50,18 +50,19 @@ body {
     background: #fdf2dd;
     display: flex;
     justify-content: center;
-    padding: 15px 0;  /* 12 → 15 */
+    padding: 15px 0;  /* preserved original spacing */
 }
 .navbar a {
     text-decoration: none;
-    margin: 0 23px;   /* 18 → 23 */
+    margin: 0 23px;   /* preserved original spacing */
     color: #000;
     font-weight: 500;
-    font-size: 19px;  /* 15 → 19 */
+    font-size: 19px;  /* preserved original size */
+    transition: color 0.3s ease;   /* added smooth transition without altering size */
 }
-.nav-center a:hover,
-.nav-center a.active {
-    color: #e63946;
+.navbar a:hover,
+.navbar a.active {
+    color: #e63946;              /* same red hover color */
 }
 
 /* BLOG CONTAINER */
@@ -184,6 +185,7 @@ body {
     text-decoration: none;
     display: block;
     margin-bottom: 5px;  /* 4 → 5 */
+    transition: color 0.3s ease; /* added smooth transition only for color */
 }
 .footer-section a:last-child {
     margin-bottom: 0;
@@ -238,5 +240,10 @@ body {
     transition: color 0.3s;
 }
 .bottom-bar a:hover {
+    color: #e63946;
+}
+
+/* ------------------ Hover color for footer useful links ------------------ */
+.footer-section a:hover {
     color: #e63946;
 }
