@@ -63,6 +63,10 @@ body {
 .nav-center a.active {
     color: #e63946;
 }
+
+.navbar a:hover {
+    color: #e63946;
+}
 /* ABOUT US SECTION */
 .aboutus {
     width: 100%;
