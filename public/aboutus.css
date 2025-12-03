@@ -3,6 +3,8 @@ body {
     font-family: 'Poppins', sans-serif;
     background-color: #fffdf8;
     font-size: 1.25em;   /* base text +25% */
+     padding: 0;
+    overflow-x: hidden;  /* Prevent horizontal scroll */
 }
 
 /* HEADER */
@@ -177,31 +179,28 @@ body {
     display: flex;
     justify-content: space-between;
     flex-wrap: wrap;
-    padding: 38px 50px;   /* 30x40 → 38x50 */
+    padding: 38px 50px;
 }
 .footer-section {
-    max-width: 313px;   /* 250 → 313 */
+    max-width: 313px;
     text-align: center;
     margin-bottom: 25px;
 }
 .footer-section h4 {
-    font-size: 20px;   /* 16 → 20 */
+    font-size: 20px;
     font-weight: 600;
     margin-bottom: 15px;
 }
 .footer-section a {
-    font-size: 16px;   /* 14 → 16 */
+    font-size: 16px;
     color: #000;
     text-decoration: none;
     display: block;
     margin-bottom: 5px;
-    transition: color 0.3s ease, padding-left 0.3s ease;
+    transition: all 0.3s ease;
 }
-
-/* --- Hover Effect for Footer Useful Links --- */
 .footer-section a:hover {
     color: #e63946;
-    padding-left: 5px;
 }
 
 /* SOCIAL ICONS */
@@ -209,16 +208,16 @@ body {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
-    gap: 19px;            /* 15 → 19 */
+    gap: 19px;
     margin-top: 13px;
-    max-width: 225px;     /* 180 → 225 */
+    max-width: 225px;
     margin-left: auto;
     margin-right: auto;
 }
 .social-icons a {
     color: #000;
-    font-size: 25px;     /* 20 → 25 */
-    width: 50px;         /* 40 → 50 */
+    font-size: 25px;
+    width: 50px;
     height: 50px;
     border-radius: 50%;
     display: flex;

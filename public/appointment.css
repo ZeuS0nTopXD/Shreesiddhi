@@ -7,6 +7,8 @@ body {
     font-family: 'Poppins', sans-serif;
     background-color: #fffdf8;
     font-size: 1.25em; /* base text +25% */
+     padding: 0;
+    overflow-x: hidden;  /* Prevent horizontal scroll */
 }
 
 /* HEADER */
@@ -211,9 +213,10 @@ textarea {
     text-decoration: none;
     display: block;
     margin-bottom: 5px;
+    transition: all 0.3s ease;
 }
-.footer-section a:last-child {
-    margin-bottom: 0;
+.footer-section a:hover {
+    color: #e63946;
 }
 
 /* SOCIAL ICONS */
