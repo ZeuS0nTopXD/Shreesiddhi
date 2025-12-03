@@ -46,23 +46,52 @@ body {
 }
 
 /* NAVBAR */
+/* NAVBAR — Same as aboutus.css */
 .navbar {
     background: #fdf2dd;
     display: flex;
     justify-content: center;
-    padding: 15px 0;  /* preserved original spacing */
+    padding: 15px 0;
 }
+
 .navbar a {
     text-decoration: none;
-    margin: 0 23px;   /* preserved original spacing */
+    margin: 0 25px;          /* spacing same as aboutus.css */
     color: #000;
     font-weight: 500;
-    font-size: 19px;  /* preserved original size */
-    transition: color 0.3s ease;   /* added smooth transition without altering size */
+    font-size: 19px;
+    transition: 0.3s ease;
+    position: relative;
 }
-.navbar a:hover,
+
+/* Underline hover effect */
+.navbar a::after {
+    content: "";
+    position: absolute;
+    width: 0;
+    height: 2px;
+    left: 0;
+    bottom: -4px;
+    background: #e63946;
+    transition: 0.3s ease;
+}
+
+/* Hover underline + color */
+.navbar a:hover::after {
+    width: 100%;
+}
+
+.navbar a:hover {
+    color: #e63946;
+}
+
+/* Active link — same as hover */
 .navbar a.active {
-    color: #e63946;              /* same red hover color */
+    color: #e63946;
+}
+
+.navbar a.active::after {
+    width: 100%;
 }
 
 /* BLOG CONTAINER */

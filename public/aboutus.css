@@ -46,26 +46,52 @@ body {
 }
 
 /* NAVBAR */
+/* NAVBAR — Same as aboutus.css */
 .navbar {
     background: #fdf2dd;
     display: flex;
     justify-content: center;
-    padding: 15px 0;  /* 12 → 15 */
-}
-.navbar a {
-    text-decoration: none;
-    margin: 0 23px;   /* 18 → 23 */
-    color: #000;
-    font-weight: 500;
-    font-size: 19px;  /* 15 → 19 */
-    transition: color 0.3s ease, border-bottom 0.3s ease;
+    padding: 15px 0;
 }
 
-/* --- Hover + Active Effect for NAVBAR --- */
-.navbar a:hover,
+.navbar a {
+    text-decoration: none;
+    margin: 0 25px;          /* spacing same as aboutus.css */
+    color: #000;
+    font-weight: 500;
+    font-size: 19px;
+    transition: 0.3s ease;
+    position: relative;
+}
+
+/* Underline hover effect */
+.navbar a::after {
+    content: "";
+    position: absolute;
+    width: 0;
+    height: 2px;
+    left: 0;
+    bottom: -4px;
+    background: #e63946;
+    transition: 0.3s ease;
+}
+
+/* Hover underline + color */
+.navbar a:hover::after {
+    width: 100%;
+}
+
+.navbar a:hover {
+    color: #e63946;
+}
+
+/* Active link — same as hover */
 .navbar a.active {
     color: #e63946;
-    border-bottom: 2px solid #e63946;
+}
+
+.navbar a.active::after {
+    width: 100%;
 }
 /* ABOUT US SECTION */
 .aboutus {

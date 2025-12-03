@@ -46,17 +46,54 @@ body {
 }
 
 /* NAVBAR */
+/* NAVBAR — Same as aboutus.css */
 .navbar {
     background: #fdf2dd;
     display: flex;
-    justify-content: space-between; 
-    align-items: center;
-    padding: 15px 40px;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
-    position: sticky; /* 👈 keeps it always visible */
-    top: 0;
-    z-index: 1000;
+    justify-content: center;
+    padding: 15px 0;
 }
+
+.navbar a {
+    text-decoration: none;
+    margin: 0 25px;          /* spacing same as aboutus.css */
+    color: #000;
+    font-weight: 500;
+    font-size: 19px;
+    transition: 0.3s ease;
+    position: relative;
+}
+
+/* Underline hover effect */
+.navbar a::after {
+    content: "";
+    position: absolute;
+    width: 0;
+    height: 2px;
+    left: 0;
+    bottom: -4px;
+    background: #e63946;
+    transition: 0.3s ease;
+}
+
+/* Hover underline + color */
+.navbar a:hover::after {
+    width: 100%;
+}
+
+.navbar a:hover {
+    color: #e63946;
+}
+
+/* Active link — same as hover */
+.navbar a.active {
+    color: #e63946;
+}
+
+.navbar a.active::after {
+    width: 100%;
+}
+
 
 /* Center navigation items */
 .nav-center {
