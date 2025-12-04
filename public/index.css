@@ -1,21 +1,16 @@
-/* ----------------------------------
-   GLOBAL
----------------------------------- */
 body {
     margin: 0;
     font-family: 'Poppins', sans-serif;
     background-color: #fffdf8;
-    font-size: 1.25em;
+    font-size: 1.25em;   /* base text +25% */
 }
 
-/* ----------------------------------
-   HEADER
----------------------------------- */
+/* HEADER */
 .top-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 19px 50px;
+    padding: 19px 50px;   /* 15x40 → 19x50 */
     background: linear-gradient(to right, #fdd49a, #f8b665);
 }
 .header-left {
@@ -23,18 +18,18 @@ body {
     align-items: center;
 }
 .logo {
-    width: 88px;
+    width: 88px;   /* 70 → 88 */
     height: auto;
-    margin-right: 13px;
+    margin-right: 13px;  /* 10 → 13 */
 }
 .brand-title h1 {
-    font-size: 25px;
+    font-size: 25px;   /* 20 → 25 */
     font-weight: 700;
     margin: 0;
     letter-spacing: 1.25px;
 }
 .brand-title span {
-    font-size: 18px;
+    font-size: 18px;   /* 14 → 18 */
     font-weight: 500;
 }
 .header-right {
@@ -43,58 +38,44 @@ body {
 .dr-name {
     font-weight: 700;
     margin: 0;
-    font-size: 20px;
+    font-size: 20px;   /* 16 → 20 */
 }
 .dr-qual {
     margin: 0;
-    font-size: 16px;
+    font-size: 16px;   /* 13 → 16 */
 }
 
-/* ----------------------------------
-   NAVBAR
----------------------------------- */
 /* NAVBAR */
 .navbar {
     background: #fdf2dd;
     display: flex;
-    justify-content: center;  /* centers the nav-center */
+    justify-content: space-between; 
     align-items: center;
-    padding: 15px 0;
-    position: relative;       /* for absolute positioning of admin button */
+    padding: 15px 40px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+    position: sticky; /* 👈 keeps it always visible */
+    top: 0;
+    z-index: 1000;
 }
 
-/* Center Menu Links */
+/* Center navigation items */
 .nav-center {
     display: flex;
     justify-content: center;
-    gap: 40px;  /* space between items */
+    flex-grow: 1;
+    gap: 30px;
 }
 
+/* Styled nav items */
 .nav-center a {
     text-decoration: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    background: transparent;
     color: #000;
     font-weight: 500;
-    font-size: 19px;
-    position: relative;
-    padding: 5px 0;
-    transition: 0.3s ease;
-}
-
-/* Underline hover effect */
-.nav-center a::after {
-    content: "";
-    position: absolute;
-    width: 0;
-    height: 2px;
-    left: 0;
-    bottom: -4px;
-    background: #e63946;
-    transition: 0.3s ease;
-}
-
-.nav-center a:hover::after,
-.nav-center a.active::after {
-    width: 100%;
+    font-size: 18px;
+    transition: all 0.3s ease;
 }
 
 .nav-center a:hover,
@@ -102,31 +83,23 @@ body {
     color: #e63946;
 }
 
-/* Admin Button on Right */
-.nav-right {
-    position: absolute;
-    right: 50px;  /* same as your navbar padding */
-}
-
-.admin-btn {
+/* Admin button (right side) */
+.nav-right .admin-btn {
     background: linear-gradient(to right, #fdd49a, #f8b665);
     color: #fff;
-    padding: 10px 20px;
+    padding: 10px 18px;
     border-radius: 6px;
     font-weight: 600;
     font-size: 16px;
-    text-decoration: none !important;
-    transition: 0.3s ease;
+    text-decoration: none;
+    transition: background 0.3s ease, transform 0.2s ease;
 }
-
-.admin-btn:hover {
+.nav-right .admin-btn:hover {
     background: #faa123;
     transform: scale(1.05);
 }
 
-/* ----------------------------------
-   HERO SECTION
----------------------------------- */
+/* HERO */
 .hero {
     display: flex;
     justify-content: space-between;
@@ -190,9 +163,7 @@ body {
     color: gray;
 }
 
-/* ----------------------------------
-   TREATMENTS
----------------------------------- */
+/* TREATMENTS */
 .treatments {
     text-align: center;
     padding: 63px 38px;
@@ -236,9 +207,7 @@ body {
     color: #444;
 }
 
-/* ----------------------------------
-   FOOTER
----------------------------------- */
+/* FOOTER */
 .footer {
     background: linear-gradient(to right, #fdd49a, #f8b665);
     display: flex;
@@ -264,6 +233,8 @@ body {
     margin-bottom: 5px;
     transition: all 0.3s ease;
 }
+
+/* ⭐ NEW — Hover effect same as navbar ⭐ */
 .footer-section a:hover {
     color: #e63946;
 }
@@ -297,9 +268,7 @@ body {
     color: #fff;
 }
 
-/* ----------------------------------
-   BOTTOM BAR
----------------------------------- */
+/* BOTTOM BAR */
 .bottom-bar {
     background: #fdf2dd;
     text-align: center;
@@ -320,4 +289,107 @@ body {
 }
 .bottom-bar a:hover {
     color: #e63946;
+}
+
+/* For mobile devices */
+@media (max-width: 768px) {
+    .container {
+        width: 100%;
+        padding: 15px;
+    }
+
+    .navbar {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .login-box, .signup-box {
+        width: 100%;
+        margin: 0;
+    }
+
+    input, button {
+        width: 100%;
+        font-size: 16px;
+    }
+}
+
+/* FULL RESPONSIVE FIX FOR ALL SCREEN SIZES */
+
+* {
+    box-sizing: border-box;
+}
+
+/* MAIN CONTAINER */
+.home-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 40px 20px;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+/* LEFT TEXT SECTION */
+.home-left {
+    flex: 1 1 300px;
+    min-width: 280px;
+}
+
+.home-left h1 {
+    font-size: clamp(28px, 5vw, 48px);
+    line-height: 1.2;
+}
+
+/* RIGHT IMAGE SECTION */
+.home-right {
+    flex: 1 1 300px;
+    min-width: 280px;
+    display: flex;
+    justify-content: center;
+}
+
+.doctor-img {
+    width: clamp(150px, 40vw, 280px);
+    height: clamp(150px, 40vw, 280px);
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+/* HEADER/TITLE RESPONSIVE FIX */
+.brand-title h1, 
+.brand-title span {
+    font-size: clamp(18px, 4vw, 32px);
+    text-align: center;
+}
+
+/* NAVBAR */
+nav ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    justify-content: center;
+}
+
+/* SECTION TEXT */
+p, span {
+    font-size: clamp(14px, 2.5vw, 18px);
+}
+
+/* Mobile-only fine tuning */
+@media(max-width: 600px) {
+
+    .top-header {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .home-section {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .doctor-img {
+        margin-top: 15px;
+    }
 }
