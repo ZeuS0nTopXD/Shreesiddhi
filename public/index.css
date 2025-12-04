@@ -53,16 +53,18 @@ body {
     align-items: center;
     padding: 15px 40px;
     box-shadow: 0 2px 6px rgba(0,0,0,0.08);
-    position: sticky; 
+    position: sticky;
     top: 0;
     z-index: 1000;
 }
+
 .nav-center {
     display: flex;
     justify-content: center;
     flex-grow: 1;
     gap: 30px;
 }
+
 .nav-center a {
     text-decoration: none;
     padding: 8px 16px;
@@ -73,10 +75,12 @@ body {
     font-size: 18px;
     transition: all 0.3s ease;
 }
+
 .nav-center a:hover,
 .nav-center a.active {
     color: #e63946;
 }
+
 .nav-right .admin-btn {
     background: linear-gradient(to right, #fdd49a, #f8b665);
     color: #fff;
@@ -229,6 +233,8 @@ body {
 .footer-section a:hover {
     color: #e63946;
 }
+
+/* SOCIAL ICONS */
 .social-icons {
     display: flex;
     flex-wrap: wrap;
@@ -280,119 +286,120 @@ body {
     color: #e63946;
 }
 
-/* For mobile devices */
-@media (max-width: 768px) {
-    .container {
-        width: 100%;
-        padding: 15px;
-    }
+/* ---------- NEW MOBILE RESPONSIVE FIXES ---------- */
+@media (max-width: 900px) {
 
-    .navbar {
-        flex-direction: column;
-        align-items: center;
-    }
+  body { overflow-x: hidden; }
 
-    .login-box, .signup-box {
-        width: 100%;
-        margin: 0;
-    }
+  .top-header {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 8px;
+    padding: 14px 16px;
+  }
+  .header-left { flex-direction: column; gap: 6px; }
+  .header-right { text-align: center; }
 
-    input, button {
-        width: 100%;
-        font-size: 16px;
-    }
-}
+  .brand-title h1 { font-size: clamp(20px, 6.5vw, 28px); }
+  .brand-title span { font-size: clamp(14px, 3.5vw, 18px); }
 
-/* =================================================================== */
-/*                ⭐ FULL RESPONSIVE FIXES (ADDED ONLY)                */
-/* =================================================================== */
+  .navbar {
+    flex-direction: column;
+    align-items: center;
+    padding: 12px 14px;
+    gap: 10px;
+  }
 
-/* HEADER RESPONSIVE FIX */
-@media(max-width: 900px) {
-    .top-header {
-        flex-direction: column;
-        text-align: center;
-        gap: 10px;
-        padding: 20px;
-    }
-    .header-left {
-        flex-direction: column;
-        text-align: center;
-    }
-    .header-right {
-        text-align: center;
-    }
-}
+  .nav-center {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    justify-content: center;
+    width: 100%;
+    max-width: 720px;
+  }
 
-/* NAVBAR RESPONSIVE FIX */
-@media(max-width: 900px) {
-    .navbar {
-        flex-direction: column;
-        gap: 15px;
-        padding: 15px 20px;
-    }
-    .nav-center {
-        flex-wrap: wrap;
-        gap: 15px;
-        justify-content: center;
-    }
-    .nav-right {
-        margin-top: 10px;
-    }
-}
+  .nav-center a {
+    font-size: 16px;
+    padding: 6px 10px;
+    white-space: nowrap;
+  }
 
-/* HERO RESPONSIVE */
-@media(max-width: 900px) {
-    .hero {
-        flex-direction: column;
-        text-align: center;
-        padding: 40px 25px;
-    }
-    .hero-text {
-        max-width: 100%;
-    }
-    .hero-photo {
-        margin-top: 20px;
-    }
-    .photo-circle {
-        width: 200px;
-        height: 200px;
-    }
-}
+  .nav-right {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    margin-top: 6px;
+  }
 
-/* CARDS RESPONSIVE */
-@media(max-width: 900px) {
-    .cards {
-        flex-direction: column;
-        align-items: center;
-        gap: 20px;
-    }
-    .card {
-        width: 90%;
-        max-width: 350px;
-    }
-}
+  .nav-right .admin-btn {
+    padding: 10px 22px;
+    font-size: 16px;
+  }
 
-/* FOOTER RESPONSIVE */
-@media(max-width: 900px) {
-    .footer {
-        flex-direction: column;
-        text-align: center;
-        padding: 30px 20px;
-        gap: 20px;
-    }
-    .footer-section {
-        max-width: 100%;
-    }
-}
+  .hero {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 32px 6%;
+    min-height: auto;
+    gap: 18px;
+  }
 
-/* UNIVERSAL MOBILE FIX */
-@media(max-width: 900px) {
-    body {
-        overflow-x: hidden;
-    }
-    img {
-        max-width: 100%;
-        height: auto;
-    }
+  .hero-photo { order: 1; margin-bottom: 4px; }
+  .hero-text { order: 2; max-width: 100%; }
+
+  .hero-text h2 {
+    font-size: clamp(30px, 8.5vw, 44px);
+    line-height: 1.05;
+    margin: 0 0 12px;
+    word-break: break-word;
+  }
+
+  .tagline {
+    font-size: clamp(16px, 3.5vw, 25px);
+    margin-bottom: 16px;
+  }
+
+  .btn {
+    padding: 14px 28px;
+    font-size: 18px;
+    min-width: 220px;
+  }
+
+  .photo-circle {
+    width: clamp(140px, 34vw, 200px);
+    height: clamp(140px, 34vw, 200px);
+  }
+
+  .photo-name { font-size: clamp(18px, 4.5vw, 24px); }
+  .photo-title { font-size: clamp(16px, 4vw, 20px); }
+  .experience { font-size: clamp(13px, 3.2vw, 16px); }
+
+  .cards {
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    padding: 0 12px;
+  }
+  .card {
+    width: 100%;
+    max-width: 420px;
+    padding: 22px;
+  }
+
+  .footer {
+    flex-direction: column;
+    align-items: center;
+    padding: 22px 16px;
+    gap: 16px;
+  }
+
+  @media (max-width: 420px) {
+    .nav-center a { font-size: 15px; }
+    .hero-text h2 { font-size: clamp(26px, 9.5vw, 36px); }
+    .btn { min-width: 180px; font-size: 16px; }
+    .photo-circle { width: 160px; height: 160px; }
+  }
 }
