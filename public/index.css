@@ -53,20 +53,16 @@ body {
     align-items: center;
     padding: 15px 40px;
     box-shadow: 0 2px 6px rgba(0,0,0,0.08);
-    position: sticky; /* 👈 keeps it always visible */
+    position: sticky; 
     top: 0;
     z-index: 1000;
 }
-
-/* Center navigation items */
 .nav-center {
     display: flex;
     justify-content: center;
     flex-grow: 1;
     gap: 30px;
 }
-
-/* Styled nav items */
 .nav-center a {
     text-decoration: none;
     padding: 8px 16px;
@@ -77,13 +73,10 @@ body {
     font-size: 18px;
     transition: all 0.3s ease;
 }
-
 .nav-center a:hover,
 .nav-center a.active {
     color: #e63946;
 }
-
-/* Admin button (right side) */
 .nav-right .admin-btn {
     background: linear-gradient(to right, #fdd49a, #f8b665);
     color: #fff;
@@ -233,13 +226,9 @@ body {
     margin-bottom: 5px;
     transition: all 0.3s ease;
 }
-
-/* ⭐ NEW — Hover effect same as navbar ⭐ */
 .footer-section a:hover {
     color: #e63946;
 }
-
-/* SOCIAL ICONS */
 .social-icons {
     display: flex;
     flex-wrap: wrap;
@@ -314,82 +303,96 @@ body {
     }
 }
 
-/* FULL RESPONSIVE FIX FOR ALL SCREEN SIZES */
+/* =================================================================== */
+/*                ⭐ FULL RESPONSIVE FIXES (ADDED ONLY)                */
+/* =================================================================== */
 
-* {
-    box-sizing: border-box;
-}
-
-/* MAIN CONTAINER */
-.home-section {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 40px 20px;
-    gap: 20px;
-    flex-wrap: wrap;
-}
-
-/* LEFT TEXT SECTION */
-.home-left {
-    flex: 1 1 300px;
-    min-width: 280px;
-}
-
-.home-left h1 {
-    font-size: clamp(28px, 5vw, 48px);
-    line-height: 1.2;
-}
-
-/* RIGHT IMAGE SECTION */
-.home-right {
-    flex: 1 1 300px;
-    min-width: 280px;
-    display: flex;
-    justify-content: center;
-}
-
-.doctor-img {
-    width: clamp(150px, 40vw, 280px);
-    height: clamp(150px, 40vw, 280px);
-    border-radius: 50%;
-    object-fit: cover;
-}
-
-/* HEADER/TITLE RESPONSIVE FIX */
-.brand-title h1, 
-.brand-title span {
-    font-size: clamp(18px, 4vw, 32px);
-    text-align: center;
-}
-
-/* NAVBAR */
-nav ul {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 12px;
-    justify-content: center;
-}
-
-/* SECTION TEXT */
-p, span {
-    font-size: clamp(14px, 2.5vw, 18px);
-}
-
-/* Mobile-only fine tuning */
-@media(max-width: 600px) {
-
+/* HEADER RESPONSIVE FIX */
+@media(max-width: 900px) {
     .top-header {
         flex-direction: column;
         text-align: center;
+        gap: 10px;
+        padding: 20px;
     }
-
-    .home-section {
+    .header-left {
         flex-direction: column;
         text-align: center;
     }
+    .header-right {
+        text-align: center;
+    }
+}
 
-    .doctor-img {
-        margin-top: 15px;
+/* NAVBAR RESPONSIVE FIX */
+@media(max-width: 900px) {
+    .navbar {
+        flex-direction: column;
+        gap: 15px;
+        padding: 15px 20px;
+    }
+    .nav-center {
+        flex-wrap: wrap;
+        gap: 15px;
+        justify-content: center;
+    }
+    .nav-right {
+        margin-top: 10px;
+    }
+}
+
+/* HERO RESPONSIVE */
+@media(max-width: 900px) {
+    .hero {
+        flex-direction: column;
+        text-align: center;
+        padding: 40px 25px;
+    }
+    .hero-text {
+        max-width: 100%;
+    }
+    .hero-photo {
+        margin-top: 20px;
+    }
+    .photo-circle {
+        width: 200px;
+        height: 200px;
+    }
+}
+
+/* CARDS RESPONSIVE */
+@media(max-width: 900px) {
+    .cards {
+        flex-direction: column;
+        align-items: center;
+        gap: 20px;
+    }
+    .card {
+        width: 90%;
+        max-width: 350px;
+    }
+}
+
+/* FOOTER RESPONSIVE */
+@media(max-width: 900px) {
+    .footer {
+        flex-direction: column;
+        text-align: center;
+        padding: 30px 20px;
+        gap: 20px;
+    }
+    .footer-section {
+        max-width: 100%;
+    }
+}
+
+/* UNIVERSAL MOBILE FIX */
+@media(max-width: 900px) {
+    body {
+        overflow-x: hidden;
+    }
+    img {
+        max-width: 100%;
+        height: auto;
     }
 }
