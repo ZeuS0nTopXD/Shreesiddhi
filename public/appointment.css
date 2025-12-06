@@ -7,8 +7,8 @@ body {
     font-family: 'Poppins', sans-serif;
     background-color: #fffdf8;
     font-size: 1.25em; /* base text +25% */
-     padding: 0;
-    overflow-x: hidden;  /* Prevent horizontal scroll */
+    padding: 0;
+    overflow-x: hidden;
 }
 
 /* HEADER */
@@ -51,16 +51,13 @@ body {
     font-size: 16px;
 }
 
-/* ====================== */
-/* NAVBAR (MATCH ABOUTUS) */
-/* ====================== */
+/* NAVBAR */
 .navbar {
     background: #fdf2dd;
     display: flex;
     justify-content: center;
     padding: 15px 0;
 }
-
 .navbar a {
     text-decoration: none;
     margin: 0 25px;
@@ -70,8 +67,6 @@ body {
     transition: 0.3s ease;
     position: relative;
 }
-
-/* Underline hover effect */
 .navbar a::after {
     content: "";
     position: absolute;
@@ -82,29 +77,20 @@ body {
     background: #e63946;
     transition: 0.3s ease;
 }
-
-/* Hover underline + color */
 .navbar a:hover::after {
     width: 100%;
 }
-
 .navbar a:hover {
     color: #e63946;
 }
-
-/* Active link — same as hover effect */
 .navbar a.active {
     color: #e63946;
 }
-
 .navbar a.active::after {
     width: 100%;
 }
 
-/* ========================= */
 /* APPOINTMENT SECTION */
-/* ========================= */
-
 .appointment-section {
     text-align: center;
     padding: 50px;
@@ -166,7 +152,6 @@ textarea {
     transform: scale(1.05);
 }
 
-/* FEE DISPLAY */
 #feeDisplay {
     margin: 10px 0;
     font-weight: bold;
@@ -269,4 +254,90 @@ textarea {
 }
 .bottom-bar a:hover {
     color: #e63946;
+}
+
+/* ========================================= */
+/* ⭐ ONLY RESPONSIVENESS ADDED BELOW ⭐ */
+/* ========================================= */
+
+/* Tablets */
+@media (max-width: 1024px) {
+    .navbar a {
+        margin: 0 15px;
+        font-size: 17px;
+    }
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+
+    .top-header {
+        flex-direction: column;
+        text-align: center;
+        padding: 20px;
+        gap: 10px;
+    }
+
+    .header-right {
+        text-align: center;
+    }
+
+    .navbar {
+        flex-wrap: wrap;
+        padding: 10px;
+    }
+
+    .navbar a {
+        margin: 8px;
+        font-size: 17px;
+    }
+
+    .form-card {
+        width: 90%;
+        padding: 22px;
+    }
+
+    .appointment-section {
+        padding: 30px 20px;
+    }
+
+    .appointment-section h2 {
+        font-size: 26px;
+    }
+
+    .footer {
+        flex-direction: column;
+        gap: 20px;
+        text-align: center;
+        padding: 25px;
+    }
+}
+
+/* Small phones */
+@media (max-width: 480px) {
+
+    .logo {
+        width: 70px;
+    }
+
+    .brand-title h1 {
+        font-size: 20px;
+    }
+
+    .brand-title span {
+        font-size: 15px;
+    }
+
+    .navbar a {
+        font-size: 16px;
+        margin: 5px;
+    }
+
+    .appointment-section h2 {
+        font-size: 22px;
+    }
+
+    .form-card {
+        width: 95%;
+    }
 }
