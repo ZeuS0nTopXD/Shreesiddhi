@@ -2,9 +2,9 @@ body {
     margin: 0;
     font-family: 'Poppins', sans-serif;
     background-color: #fffdf8;
-    font-size: 1.25em;   /* base text +25% */
+    font-size: 1.25em;
     padding: 0;
-    overflow-x: hidden;  /* Prevent horizontal scroll */
+    overflow-x: hidden;
 }
 
 /* HEADER */
@@ -14,21 +14,16 @@ body {
     align-items: center;
     padding: 19px 50px;
     background: linear-gradient(to right, #fdd49a, #f8b665);
-    width: 100%;
-    box-sizing: border-box;
 }
-
 .header-left {
     display: flex;
     align-items: center;
 }
-
 .logo {
     width: 88px;
     height: auto;
     margin-right: 13px;
 }
-
 .brand-title h1 {
     font-size: 25px;
     font-weight: 700;
@@ -39,11 +34,9 @@ body {
     font-size: 18px;
     font-weight: 500;
 }
-
 .header-right {
     text-align: right;
 }
-
 .dr-name {
     font-weight: 700;
     margin: 0;
@@ -60,8 +53,6 @@ body {
     display: flex;
     justify-content: center;
     padding: 15px 0;
-    width: 100%;
-    box-sizing: border-box;
 }
 
 .navbar a {
@@ -111,7 +102,6 @@ body {
     text-align: center;
     padding: 40px 20px;
     box-sizing: border-box;
-    overflow-x: hidden;  /* prevent unwanted horizontal scroll */
 }
 
 .container h1 {
@@ -136,7 +126,6 @@ body {
     max-width: 900px;
     padding: 0 20px;
 }
-
 .section h2 {
     display: inline-block;
     background: #a83232;
@@ -146,7 +135,6 @@ body {
     font-size: 25px;
     margin-bottom: 20px;
 }
-
 .section p,
 .section ul,
 .section ol {
@@ -155,15 +143,11 @@ body {
     max-width: 850px;
     font-size: 20px;
 }
-
 .section ul,
 .section ol {
     padding-left: 0;
     list-style: none;
-    margin: 0 auto;
-    text-align: center;
 }
-
 .section li {
     margin: 8px 0;
 }
@@ -202,29 +186,24 @@ body {
     justify-content: space-between;
     flex-wrap: wrap;
     padding: 38px 50px;
-    width: 100%;
-    box-sizing: border-box;
 }
-
 .footer-section {
     max-width: 313px;
     text-align: center;
     margin-bottom: 25px;
 }
-
 .footer-section h4 {
     font-size: 20px;
     font-weight: 600;
     margin-bottom: 15px;
 }
-
 .footer-section a {
     font-size: 16px;
     color: #000;
     text-decoration: none;
     display: block;
     margin-bottom: 5px;
-    transition: all 0.3s ease;
+    transition: 0.3s ease;
 }
 .footer-section a:hover {
     color: #e63946;
@@ -241,6 +220,7 @@ body {
     margin-left: auto;
     margin-right: auto;
 }
+
 .social-icons a {
     color: #000;
     font-size: 25px;
@@ -267,7 +247,6 @@ body {
     font-size: 16px;
     color: #000;
     border-top: 1px solid rgba(0,0,0,0.1);
-    width: 100%;
 }
 .bottom-bar p {
     margin: 7px 0;
@@ -283,84 +262,51 @@ body {
     color: #e63946;
 }
 
-/* ------------------ RESPONSIVE FIXES ------------------ */
+/* FINAL NO-WHITE-BORDER FIX */
+html, body {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden !important;
+}
 
-/* Mobile */
+* {
+    box-sizing: border-box !important;
+}
+
+img, .container, .section, .top-header, .footer, .navbar {
+    max-width: 100% !important;
+}
+
+/* RESPONSIVE FIXES */
 @media (max-width: 768px) {
-
     .top-header {
         flex-direction: column;
+        gap: 10px;
+        padding: 15px 20px;
         text-align: center;
-        padding: 20px;
-    }
-
-    .header-left {
-        flex-direction: column;
-    }
-
-    .logo {
-        margin-right: 0;
-        margin-bottom: 10px;
-        width: 70px;
     }
 
     .navbar {
         flex-wrap: wrap;
-        gap: 10px;
         padding: 10px 0;
     }
 
     .navbar a {
-        margin: 5px 12px;
+        margin: 8px 15px;
         font-size: 17px;
     }
 
-    .container h1 {
-        font-size: 26px;
-    }
-
-    .section h2 {
-        font-size: 22px;
-        padding: 8px 18px;
-    }
-
-    .section p {
-        font-size: 17px;
+    .container {
+        padding: 30px 15px;
     }
 
     .footer {
         flex-direction: column;
         text-align: center;
-        padding: 30px 20px;
+        padding: 25px;
     }
 
     .footer-section {
-        margin-bottom: 20px;
-    }
-
-    .bottom-bar {
-        font-size: 14px;
-        padding: 12px;
-    }
-}
-
-/* Very small phones */
-@media (max-width: 480px) {
-
-    .navbar a {
-        margin: 5px 8px;
-        font-size: 15px;
-    }
-
-    .container {
-        padding: 25px 10px;
-    }
-
-    .section h2 {
-        font-size: 20px;
-    }
-
-    .quote {
-        font-size: 17px;
+        max-width: 100%;
     }
 }
