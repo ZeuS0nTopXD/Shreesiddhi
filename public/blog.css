@@ -3,7 +3,7 @@ body {
     font-family: 'Poppins', sans-serif;
     background-color: #fffdf8;
     font-size: 1.25em;   /* base text +25% */
-     padding: 0;
+    padding: 0;
     overflow-x: hidden;  /* Prevent horizontal scroll */
 }
 
@@ -12,53 +12,61 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 19px 50px;   /* 15x40 → 19x50 */
+    padding: 19px 50px;
     background: linear-gradient(to right, #fdd49a, #f8b665);
+    width: 100%;
+    box-sizing: border-box;
 }
+
 .header-left {
     display: flex;
     align-items: center;
 }
+
 .logo {
-    width: 88px;   /* 70 → 88 */
+    width: 88px;
     height: auto;
-    margin-right: 13px;  /* 10 → 13 */
+    margin-right: 13px;
 }
+
 .brand-title h1 {
-    font-size: 25px;   /* 20 → 25 */
+    font-size: 25px;
     font-weight: 700;
     margin: 0;
     letter-spacing: 1.25px;
 }
 .brand-title span {
-    font-size: 18px;   /* 14 → 18 */
+    font-size: 18px;
     font-weight: 500;
 }
+
 .header-right {
     text-align: right;
 }
+
 .dr-name {
     font-weight: 700;
     margin: 0;
-    font-size: 20px;   /* 16 → 20 */
+    font-size: 20px;
 }
 .dr-qual {
     margin: 0;
-    font-size: 16px;   /* 13 → 16 */
+    font-size: 16px;
 }
 
 /* NAVBAR */
-/* NAVBAR — Same as aboutus.css */
 .navbar {
     background: #fdf2dd;
     display: flex;
     justify-content: center;
     padding: 15px 0;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .navbar a {
     text-decoration: none;
-    margin: 0 25px;          /* spacing same as aboutus.css */
+    margin: 0 25px;
     color: #000;
     font-weight: 500;
     font-size: 19px;
@@ -66,7 +74,6 @@ body {
     position: relative;
 }
 
-/* Underline hover effect */
 .navbar a::after {
     content: "";
     position: absolute;
@@ -78,20 +85,16 @@ body {
     transition: 0.3s ease;
 }
 
-/* Hover underline + color */
 .navbar a:hover::after {
     width: 100%;
 }
-
 .navbar a:hover {
     color: #e63946;
 }
 
-/* Active link — same as hover */
 .navbar a.active {
     color: #e63946;
 }
-
 .navbar a.active::after {
     width: 100%;
 }
@@ -99,15 +102,16 @@ body {
 /* BLOG CONTAINER */
 .container {
     width: 100%;
-    min-height: calc(100vh - 180px); /* takes display height minus header/footer */
+    min-height: calc(100vh - 180px);
     background: linear-gradient(to right, #fdd49a, #f8b665);
     display: flex;
-    justify-content: center;   
-    align-items: center;       
-    flex-direction: column;    
-    text-align: center;        
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    text-align: center;
     padding: 40px 20px;
     box-sizing: border-box;
+    overflow-x: hidden;  /* prevent unwanted horizontal scroll */
 }
 
 .container h1 {
@@ -125,7 +129,7 @@ body {
     margin-bottom: 20px;
 }
 
-/* SECTION STYLING */
+/* SECTION */
 .section {
     margin: 20px auto;
     text-align: center;
@@ -142,20 +146,21 @@ body {
     font-size: 25px;
     margin-bottom: 20px;
 }
-.section p, 
-.section ul, 
+
+.section p,
+.section ul,
 .section ol {
     text-align: center;
     margin: 0 auto;
     max-width: 850px;
     font-size: 20px;
 }
-.section ul, 
+
+.section ul,
 .section ol {
-    padding-left: 0;       /* remove left indent */
-    list-style: none;      /* remove numbers/dots */
+    padding-left: 0;
+    list-style: none;
     margin: 0 auto;
-    max-width: 850px;
     text-align: center;
 }
 
@@ -163,8 +168,7 @@ body {
     margin: 8px 0;
 }
 
-
-/* HIGHLIGHT SECTION */
+/* HIGHLIGHT */
 .highlight {
     background: #fff3e0;
     padding: 30px;
@@ -179,18 +183,17 @@ body {
 .quote {
     background: #f9f4dd;
     text-align: center;
-    padding: 8px 0;   /* smaller height */
+    padding: 8px 0;
     font-style: italic;
     font-size: 20px;
     font-weight: 700;
     color: #5a6025;
     border-left: 5px solid #d4b24c;
     border-right: 5px solid #d4b24c;
-    width: 100%;      /* full width */
+    width: 100%;
     line-height: 1.4;
-    margin: 0;        /* remove extra white space */
+    margin: 0;
 }
-
 
 /* FOOTER */
 .footer {
@@ -199,17 +202,22 @@ body {
     justify-content: space-between;
     flex-wrap: wrap;
     padding: 38px 50px;
+    width: 100%;
+    box-sizing: border-box;
 }
+
 .footer-section {
     max-width: 313px;
     text-align: center;
     margin-bottom: 25px;
 }
+
 .footer-section h4 {
     font-size: 20px;
     font-weight: 600;
     margin-bottom: 15px;
 }
+
 .footer-section a {
     font-size: 16px;
     color: #000;
@@ -255,10 +263,11 @@ body {
 .bottom-bar {
     background: #fdf2dd;
     text-align: center;
-    padding: 15px 25px;   /* 12x20 → 15x25 */
-    font-size: 16px;      /* 13 → 16 */
+    padding: 15px 25px;
+    font-size: 16px;
     color: #000;
     border-top: 1px solid rgba(0,0,0,0.1);
+    width: 100%;
 }
 .bottom-bar p {
     margin: 7px 0;
@@ -266,7 +275,7 @@ body {
 .bottom-bar a {
     color: #000;
     text-decoration: none;
-    margin: 0 8px;   /* 6 → 8 */
+    margin: 0 8px;
     font-weight: 500;
     transition: color 0.3s;
 }
@@ -274,7 +283,84 @@ body {
     color: #e63946;
 }
 
-/* ------------------ Hover color for footer useful links ------------------ */
-.footer-section a:hover {
-    color: #e63946;
+/* ------------------ RESPONSIVE FIXES ------------------ */
+
+/* Mobile */
+@media (max-width: 768px) {
+
+    .top-header {
+        flex-direction: column;
+        text-align: center;
+        padding: 20px;
+    }
+
+    .header-left {
+        flex-direction: column;
+    }
+
+    .logo {
+        margin-right: 0;
+        margin-bottom: 10px;
+        width: 70px;
+    }
+
+    .navbar {
+        flex-wrap: wrap;
+        gap: 10px;
+        padding: 10px 0;
+    }
+
+    .navbar a {
+        margin: 5px 12px;
+        font-size: 17px;
+    }
+
+    .container h1 {
+        font-size: 26px;
+    }
+
+    .section h2 {
+        font-size: 22px;
+        padding: 8px 18px;
+    }
+
+    .section p {
+        font-size: 17px;
+    }
+
+    .footer {
+        flex-direction: column;
+        text-align: center;
+        padding: 30px 20px;
+    }
+
+    .footer-section {
+        margin-bottom: 20px;
+    }
+
+    .bottom-bar {
+        font-size: 14px;
+        padding: 12px;
+    }
+}
+
+/* Very small phones */
+@media (max-width: 480px) {
+
+    .navbar a {
+        margin: 5px 8px;
+        font-size: 15px;
+    }
+
+    .container {
+        padding: 25px 10px;
+    }
+
+    .section h2 {
+        font-size: 20px;
+    }
+
+    .quote {
+        font-size: 17px;
+    }
 }
