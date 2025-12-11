@@ -2,10 +2,9 @@ body {
     margin: 0;
     font-family: 'Poppins', sans-serif;
     background-color: #fffdf8;
-    font-size: 1.25em;   /* base text +25% */
+    font-size: 1.25em;
     padding: 0;
-    overflow-x: hidden;  /* Prevent horizontal scroll */
-
+    overflow-x: hidden;
 }
 
 /* HEADER */
@@ -13,7 +12,7 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 19px 50px;   /* 15x40 → 19x50 */
+    padding: 19px 50px;
     background: linear-gradient(to right, #fdd49a, #f8b665);
 }
 .header-left {
@@ -21,18 +20,18 @@ body {
     align-items: center;
 }
 .logo {
-    width: 88px;   /* 70 → 88 */
+    width: 88px;
     height: auto;
-    margin-right: 13px;  /* 10 → 13 */
+    margin-right: 13px;
 }
 .brand-title h1 {
-    font-size: 25px;   /* 20 → 25 */
+    font-size: 25px;
     font-weight: 700;
     margin: 0;
     letter-spacing: 1.25px;
 }
 .brand-title span {
-    font-size: 18px;   /* 14 → 18 */
+    font-size: 18px;
     font-weight: 500;
 }
 .header-right {
@@ -41,15 +40,14 @@ body {
 .dr-name {
     font-weight: 700;
     margin: 0;
-    font-size: 20px;   /* 16 → 20 */
+    font-size: 20px;
 }
 .dr-qual {
     margin: 0;
-    font-size: 16px;   /* 13 → 16 */
+    font-size: 16px;
 }
 
 /* NAVBAR */
-/* NAVBAR — Same as aboutus.css */
 .navbar {
     background: #fdf2dd;
     display: flex;
@@ -59,7 +57,7 @@ body {
 
 .navbar a {
     text-decoration: none;
-    margin: 0 25px;          /* spacing same as aboutus.css */
+    margin: 0 25px;
     color: #000;
     font-weight: 500;
     font-size: 19px;
@@ -67,7 +65,6 @@ body {
     position: relative;
 }
 
-/* Underline hover effect */
 .navbar a::after {
     content: "";
     position: absolute;
@@ -79,24 +76,19 @@ body {
     transition: 0.3s ease;
 }
 
-/* Hover underline + color */
 .navbar a:hover::after {
     width: 100%;
 }
-
 .navbar a:hover {
     color: #e63946;
 }
 
-/* Active link — same as hover */
 .navbar a.active {
     color: #e63946;
 }
-
 .navbar a.active::after {
     width: 100%;
 }
-
 
 /* FEEDBACK SECTION */
 .feedback-section {
@@ -173,9 +165,9 @@ body {
 /* Star Rating */
 .star-rating {
     display: flex;
-    flex-direction: row-reverse;   /* left to right */
+    flex-direction: row-reverse;
     justify-content: flex-end;
-    gap: 5px; /* little more spacing */
+    gap: 5px;
     margin-top: 8px;
 }
 
@@ -184,25 +176,13 @@ body {
 }
 
 .star-rating label {
-    font-size: 32px;   /* bigger stars */
-    font-weight: bold; /* bold stars */
+    font-size: 32px;
+    font-weight: bold;
     color: black;
     cursor: pointer;
     transition: color 0.3s;
 }
 
-/* Hover effect */
-.star-rating label:hover,
-.star-rating label:hover ~ label {
-    color: #f5a623;
-}
-
-/* Checked effect */
-.star-rating input:checked ~ label {
-    color: #f5a623;
-}
-
-/* Highlight stars correctly */
 .star-rating label:hover,
 .star-rating label:hover ~ label {
     color: #f5a623;
@@ -211,25 +191,22 @@ body {
 .star-rating input:checked ~ label {
     color: #f5a623;
 }
-
-
 
 /* QUOTE */
 .quote {
     background: #f9f4dd;
     text-align: center;
-    padding: 8px 0;   /* smaller height */
+    padding: 8px 0;
     font-style: italic;
     font-size: 20px;
     font-weight: 700;
     color: #5a6025;
     border-left: 5px solid #d4b24c;
     border-right: 5px solid #d4b24c;
-    width: 100%;      /* full width */
+    width: 100%;
     line-height: 1.4;
-    margin: 0;        /* remove extra white space */
+    margin: 0;
 }
-
 
 /* FOOTER */
 .footer {
@@ -255,7 +232,7 @@ body {
     text-decoration: none;
     display: block;
     margin-bottom: 5px;
-    transition: all 0.3s ease;
+    transition: 0.3s ease;
 }
 .footer-section a:hover {
     color: #e63946;
@@ -294,8 +271,8 @@ body {
 .bottom-bar {
     background: #fdf2dd;
     text-align: center;
-    padding: 15px 25px;   /* 12x20 → 15x25 */
-    font-size: 16px;      /* 13 → 16 */
+    padding: 15px 25px;
+    font-size: 16px;
     color: #000;
     border-top: 1px solid rgba(0,0,0,0.1);
 }
@@ -305,10 +282,90 @@ body {
 .bottom-bar a {
     color: #000;
     text-decoration: none;
-    margin: 0 8px;   /* 6 → 8 */
+    margin: 0 8px;
     font-weight: 500;
     transition: color 0.3s;
 }
 .bottom-bar a:hover {
     color: #e63946;
+}
+
+/* ------------------------------------------------ */
+/*     RESPONSIVE RULES (ONLY CHANGES ADDED)        */
+/* ------------------------------------------------ */
+
+/* Tablets and below */
+@media (max-width: 1024px) {
+    .top-header {
+        padding: 15px 25px;
+        flex-direction: column;
+        gap: 10px;
+        text-align: center;
+    }
+
+    .navbar a {
+        margin: 0 15px;
+        font-size: 17px;
+    }
+
+    .feedback-card {
+        width: 90%;
+    }
+}
+
+/* Mobile devices */
+@media (max-width: 768px) {
+    body {
+        font-size: 1em;
+    }
+
+    .navbar {
+        flex-wrap: wrap;
+        padding: 10px 0;
+    }
+
+    .navbar a {
+        margin: 6px 12px;
+        font-size: 16px;
+    }
+
+    .feedback-section {
+        padding: 25px;
+    }
+
+    .feedback-card {
+        width: 100%;
+        padding: 20px;
+    }
+}
+
+/* Small Mobile */
+@media (max-width: 480px) {
+    .logo {
+        width: 65px;
+    }
+
+    .brand-title h1 {
+        font-size: 20px;
+    }
+
+    .feedback-card {
+        padding: 18px;
+    }
+
+    .star-rating label {
+        font-size: 26px;
+    }
+}
+
+/* NO-WHITE-BORDER FIX */
+html, body {
+    max-width: 100%;
+    overflow-x: hidden !important;
+}
+* {
+    box-sizing: border-box !important;
+}
+img, .top-header, .navbar, .feedback-card, .footer {
+    max-width: 100% !important;
 }
